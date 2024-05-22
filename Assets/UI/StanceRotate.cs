@@ -1,36 +1,51 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class StanceRotate : MonoBehaviour
 {
     private Vector3 MousePos;
     private Vector3 ScreenCenter;
 
+    public float Angle;
+
     [SerializeField] GameObject arrowObj;
 
     private LineRenderer _linerender;
 
+    [Range(0f, 1f)]
+    [SerializeField] private float DeadZone = 0.05f;
+    private float StanceDeadZone;
+    
     private void Start()
     {
+        Cursor.visible = false;
+        StanceDeadZone = Screen.width * DeadZone;
         ScreenCenter = new Vector2(Screen.width/2, Screen.height/2);
     }
-
     private void Update()
     {
-        MouseReset();
-
         MousePos = Input.mousePosition;
+        Cursor.lockState = CursorLockMode.Confined;
+        //-----------------------------
 
-        if (Input.GetAxisRaw("Mouse X") != 0 ||
-            Input.GetAxisRaw("Mouse Y") != 0 )
+        if (MouseOutDeadZone(MousePos))
         {
-            Cursor.lockState = CursorLockMode.Confined;
-            MouseHandling(MousePos);
-        }
+            MouseReset();
+            Quaternion n = MouseAngleFromLastPos(MousePos, ScreenCenter);
+            arrowObj.transform.rotation = n;
+        } 
 
-        Debug.Log(Cursor.lockState);
+        Debug.Log(MouseOutDeadZone(MousePos));
     }    
+
+    private bool MouseOutDeadZone(Vector3 mouse)
+    {
+        Vector3 dist = mouse - ScreenCenter;
+
+        return dist.magnitude > StanceDeadZone;
+    }
 
     private void MouseReset()
     {
@@ -39,18 +54,18 @@ public class StanceRotate : MonoBehaviour
             Cursor.lockState = CursorLockMode.Locked;
         }
     }
-    private void MouseHandling(Vector3 mousePos)
+    private Quaternion MouseAngleFromLastPos(Vector3 mousePos, Vector3 center)
     {
-        Vector3 dirFromCenter = mousePos - ScreenCenter;
+        Vector3 dirFromCenter = mousePos - center;
         dirFromCenter = dirFromCenter.normalized;
+        dirFromCenter.z = 0.0f;
 
-        float angle = Vector3.Angle(transform.up, dirFromCenter);
-        //Debug.Log(angle);
-
-        Quaternion newRot = Quaternion.AngleAxis(angle, transform.forward);
+        //float angle = Vector3.Angle(transform.up, dirFromCenter);
+        //Angle = angle;
         
-        arrowObj.transform.rotation = newRot;
-    }
+        Quaternion newRot = Quaternion.FromToRotation(transform.up, dirFromCenter);
 
-    
+        return newRot;
+    }
+   
 }

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
@@ -36,7 +37,7 @@ public class PlayerController : MonoBehaviour
             Debug.Log("Heavy attack pressed");
         }
     }
-
+   
     private void Update()
     {
         if (currentAttackDelay < attackCooldown)

@@ -44,6 +44,15 @@ public partial class @FightControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""StanceRotate"",
+                    ""type"": ""Value"",
+                    ""id"": ""032ce7e2-272e-4884-b495-5fff7ffac1e0"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -90,6 +99,61 @@ public partial class @FightControls: IInputActionCollection2, IDisposable
                     ""action"": ""LightAttack"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""2D Vector"",
+                    ""id"": ""b286d28c-a286-40ce-88a7-64d898503786"",
+                    ""path"": ""2DVector"",
+                    ""interactions"": """",
+                    ""processors"": ""NormalizeVector2"",
+                    ""groups"": """",
+                    ""action"": ""StanceRotate"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""f26b7828-46b1-41b8-8bfc-62e718dae294"",
+                    ""path"": ""<Mouse>/delta/up"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""StanceRotate"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""c644d53f-9cfb-41a2-a14a-e8e78bc6364c"",
+                    ""path"": ""<Mouse>/delta/down"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""StanceRotate"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""97781503-5e24-43d9-8668-a7258ed5ed82"",
+                    ""path"": ""<Mouse>/delta/left"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""StanceRotate"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""2c0373d7-2085-4a78-8933-86354bf50949"",
+                    ""path"": ""<Mouse>/delta/right"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""StanceRotate"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         }
@@ -100,6 +164,7 @@ public partial class @FightControls: IInputActionCollection2, IDisposable
         m_PlayerStance = asset.FindActionMap("PlayerStance", throwIfNotFound: true);
         m_PlayerStance_LightAttack = m_PlayerStance.FindAction("LightAttack", throwIfNotFound: true);
         m_PlayerStance_HeavyAttack = m_PlayerStance.FindAction("HeavyAttack", throwIfNotFound: true);
+        m_PlayerStance_StanceRotate = m_PlayerStance.FindAction("StanceRotate", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -163,12 +228,14 @@ public partial class @FightControls: IInputActionCollection2, IDisposable
     private List<IPlayerStanceActions> m_PlayerStanceActionsCallbackInterfaces = new List<IPlayerStanceActions>();
     private readonly InputAction m_PlayerStance_LightAttack;
     private readonly InputAction m_PlayerStance_HeavyAttack;
+    private readonly InputAction m_PlayerStance_StanceRotate;
     public struct PlayerStanceActions
     {
         private @FightControls m_Wrapper;
         public PlayerStanceActions(@FightControls wrapper) { m_Wrapper = wrapper; }
         public InputAction @LightAttack => m_Wrapper.m_PlayerStance_LightAttack;
         public InputAction @HeavyAttack => m_Wrapper.m_PlayerStance_HeavyAttack;
+        public InputAction @StanceRotate => m_Wrapper.m_PlayerStance_StanceRotate;
         public InputActionMap Get() { return m_Wrapper.m_PlayerStance; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -184,6 +251,9 @@ public partial class @FightControls: IInputActionCollection2, IDisposable
             @HeavyAttack.started += instance.OnHeavyAttack;
             @HeavyAttack.performed += instance.OnHeavyAttack;
             @HeavyAttack.canceled += instance.OnHeavyAttack;
+            @StanceRotate.started += instance.OnStanceRotate;
+            @StanceRotate.performed += instance.OnStanceRotate;
+            @StanceRotate.canceled += instance.OnStanceRotate;
         }
 
         private void UnregisterCallbacks(IPlayerStanceActions instance)
@@ -194,6 +264,9 @@ public partial class @FightControls: IInputActionCollection2, IDisposable
             @HeavyAttack.started -= instance.OnHeavyAttack;
             @HeavyAttack.performed -= instance.OnHeavyAttack;
             @HeavyAttack.canceled -= instance.OnHeavyAttack;
+            @StanceRotate.started -= instance.OnStanceRotate;
+            @StanceRotate.performed -= instance.OnStanceRotate;
+            @StanceRotate.canceled -= instance.OnStanceRotate;
         }
 
         public void RemoveCallbacks(IPlayerStanceActions instance)
@@ -215,5 +288,6 @@ public partial class @FightControls: IInputActionCollection2, IDisposable
     {
         void OnLightAttack(InputAction.CallbackContext context);
         void OnHeavyAttack(InputAction.CallbackContext context);
+        void OnStanceRotate(InputAction.CallbackContext context);
     }
 }
