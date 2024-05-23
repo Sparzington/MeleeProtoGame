@@ -33,13 +33,12 @@ public class StanceRotate : MonoBehaviour
         if (MouseOutDeadZone(MousePos))
         {
             MouseReset();
-            Quaternion n = MouseAngleFromLastPos(MousePos, ScreenCenter);
-            arrowObj.transform.rotation = n;
+            arrowObj.transform.rotation = MouseAngleFromLastPos(MousePos, ScreenCenter);
         } 
 
-        Debug.Log(MouseOutDeadZone(MousePos));
+        //Debug.Log(MouseOutDeadZone(MousePos));
     }    
-
+    
     private bool MouseOutDeadZone(Vector3 mouse)
     {
         Vector3 dist = mouse - ScreenCenter;

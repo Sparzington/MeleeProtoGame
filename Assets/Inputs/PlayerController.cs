@@ -8,6 +8,8 @@ public class PlayerController : MonoBehaviour
     //Our input action Asset
     private FightControls _fightControls;
 
+    private Animator _animator;
+
     [SerializeField] private float attackCooldown = 0.6f;
     private float currentAttackDelay;
     private bool canAttack;
@@ -15,6 +17,8 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         _fightControls = new FightControls();
+    
+        _animator = GetComponent<Animator>();
     }
     private void OnLightAttack()
     {
@@ -23,7 +27,7 @@ public class PlayerController : MonoBehaviour
             canAttack= false;
             currentAttackDelay = 0.0f;
 
-            Debug.Log("Light attack pressed");
+            _animator.SetBool("Attack", true);
         }
     }
 
@@ -33,8 +37,6 @@ public class PlayerController : MonoBehaviour
         {
             canAttack = false;
             currentAttackDelay = 0.0f;
-
-            Debug.Log("Heavy attack pressed");
         }
     }
    
@@ -46,6 +48,7 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
+            _animator.SetBool("Attack", false);
             if (!canAttack)
             {
                 canAttack = true;
