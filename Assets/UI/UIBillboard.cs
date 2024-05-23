@@ -10,8 +10,9 @@ public class UIBillboard : MonoBehaviour
     {
         FacingCamera = GetComponent<Canvas>().worldCamera.gameObject;
     }
-    private void Update()
+
+    private void OnEnable()
     {
-        transform.LookAt(FacingCamera.transform.position);   
+        transform.LookAt(FacingCamera.transform.position);
     }
 }

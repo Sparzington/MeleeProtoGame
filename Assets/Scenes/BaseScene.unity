@@ -1856,6 +1856,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Angle: 0
+  UI_Parent: {fileID: 0}
   arrowObj: {fileID: 321760347}
   DeadZone: 0.05
 --- !u!114 &836233054
@@ -3610,6 +3611,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Angle: 0
+  UI_Parent: {fileID: 0}
   arrowObj: {fileID: 1322650642}
   DeadZone: 0.05
 --- !u!114 &1814505266
@@ -4573,6 +4575,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Angle: 0
+  UI_Parent: {fileID: 2066886196}
   arrowObj: {fileID: 309329851}
   DeadZone: 0.05
 --- !u!114 &2066886200

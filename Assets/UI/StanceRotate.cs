@@ -10,7 +10,8 @@ public class StanceRotate : MonoBehaviour
 
     public float Angle;
 
-    [SerializeField] GameObject arrowObj;
+    [SerializeField] private GameObject UI_Parent;
+    [SerializeField] private GameObject arrowObj;
 
     private LineRenderer _linerender;
 
