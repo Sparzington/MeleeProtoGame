@@ -13,6 +13,8 @@ public class UIBillboard : MonoBehaviour
 
     private void OnEnable()
     {
-        transform.LookAt(FacingCamera.transform.position);
+        Vector3 faceDirection = transform.position - FacingCamera.transform.position;
+
+        transform.transform.rotation = Quaternion.LookRotation(faceDirection.normalized);
     }
 }
