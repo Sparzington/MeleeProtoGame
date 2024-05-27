@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -42,6 +43,8 @@ public class PlayerController : MonoBehaviour
    
     private void Update()
     {
+        HandleInput();
+
         if (currentAttackDelay < attackCooldown)
         {
             currentAttackDelay += Time.deltaTime;
@@ -53,6 +56,29 @@ public class PlayerController : MonoBehaviour
             {
                 canAttack = true;
             }
+        }
+    }
+
+    private void HandleInput()
+    {
+        if (Input.GetKeyDown(KeyCode.W))
+        {
+            _animator.SetInteger("Aim", 0);
+        }
+        else if (Input.GetKeyDown(KeyCode.A))
+        {
+
+            _animator.SetInteger("Aim", 1);
+        }
+        else if (Input.GetKeyDown(KeyCode.S))
+        {
+            _animator.SetInteger("Aim", 2);
+
+        }
+        else if (Input.GetKeyDown(KeyCode.D))
+        {
+            _animator.SetInteger("Aim", 3);
+
         }
     }
 }
