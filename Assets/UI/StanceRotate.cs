@@ -11,6 +11,7 @@ public class StanceRotate : MonoBehaviour
     private Quaternion ParentQuaternion;
 
     public float Angle;
+    public float DebugAngle;
 
     [SerializeField] private GameObject arrowObj;
 
@@ -34,6 +35,13 @@ public class StanceRotate : MonoBehaviour
     }
     private void Update()
     {
+        
+
+        //Debug.Log(MouseOutDeadZone(MousePos));
+    }
+
+    private void LateUpdate()
+    {
         MousePos = Input.mousePosition;
         Cursor.lockState = CursorLockMode.Confined;
         //-----------------------------
@@ -48,11 +56,9 @@ public class StanceRotate : MonoBehaviour
             //
 
             arrowObj.transform.localRotation = MouseAngleFromLastPos(MousePos, ScreenCenter);
-        } 
+        }
+    }
 
-        //Debug.Log(MouseOutDeadZone(MousePos));
-    }    
-    
     /// <summary>
     /// Checks if mouse is outside of set center deadzone.
     /// </summary>
@@ -88,14 +94,17 @@ public class StanceRotate : MonoBehaviour
         dirFromCenter = dirFromCenter.normalized;
         dirFromCenter.z = 0.0f;
 
-        Angle = Vector3.Angle(transform.up, dirFromCenter);
+        //Angle = Vector3.Angle(transform.up, dirFromCenter);
+        Angle = Mathf.Atan2(mousePos.y - ScreenCenter.y, mousePos.x - ScreenCenter.x) * 180 / Mathf.PI;
+
         //Angle = angle;
 
         Quaternion newRot = Quaternion.FromToRotation(transform.up, dirFromCenter);
         newRot.x= 0.0f;
         newRot.y= 0.0f;
 
+        DebugAngle = Vector3.Angle(transform.right, arrowObj.transform.right);
+
         return newRot;
-    }
-   
+    }   
 }

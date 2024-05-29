@@ -4,12 +4,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+public enum FightState { IDLE, ATTACKING}
 public class PlayerController : MonoBehaviour
 {
+    private FightState CurrentState;
+
     //Our input action Asset
     private FightControls _fightControls;
 
-    private Animator _animator;
+    private CharacterAnimator _characterAnimator;
+
+    private StanceRotate _stanceComponent;
 
     [SerializeField] private float attackCooldown = 0.6f;
     private float currentAttackDelay;
@@ -18,8 +23,14 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         _fightControls = new FightControls();
-    
-        _animator = GetComponent<Animator>();
+
+        _stanceComponent = GetComponentInChildren<StanceRotate>();
+
+        _characterAnimator = GetComponent<CharacterAnimator>();
+    }
+    private void Start()
+    {
+        CurrentState = FightState.IDLE;
     }
     private void OnLightAttack()
     {
@@ -28,7 +39,7 @@ public class PlayerController : MonoBehaviour
             canAttack= false;
             currentAttackDelay = 0.0f;
 
-            _animator.SetBool("Attack", true);
+            _characterAnimator.PlayLightAttack();
         }
     }
 
@@ -43,7 +54,23 @@ public class PlayerController : MonoBehaviour
    
     private void Update()
     {
-        HandleInput();
+        switch (CurrentState)
+        {
+            case FightState.IDLE:
+                _characterAnimator.SetStanceAnim(_stanceComponent.Angle);
+
+                break;
+            case FightState.ATTACKING:
+
+                if (canAttack)
+                {
+                    canAttack = false;
+                    _characterAnimator.PlayLightAttack();
+                }
+                break;
+            default:
+                break;
+        }
 
         if (currentAttackDelay < attackCooldown)
         {
@@ -51,34 +78,11 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            _animator.SetBool("Attack", false);
             if (!canAttack)
             {
                 canAttack = true;
             }
         }
     }
-
-    private void HandleInput()
-    {
-        if (Input.GetKeyDown(KeyCode.W))
-        {
-            _animator.SetInteger("Aim", 0);
-        }
-        else if (Input.GetKeyDown(KeyCode.A))
-        {
-
-            _animator.SetInteger("Aim", 1);
-        }
-        else if (Input.GetKeyDown(KeyCode.S))
-        {
-            _animator.SetInteger("Aim", 2);
-
-        }
-        else if (Input.GetKeyDown(KeyCode.D))
-        {
-            _animator.SetInteger("Aim", 3);
-
-        }
-    }
+    
 }
