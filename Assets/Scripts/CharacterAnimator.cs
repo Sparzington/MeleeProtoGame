@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,6 +13,8 @@ public class CharacterAnimator : MonoBehaviour
     private int RH;
     private int RL;
     private int ATK;
+
+    public event EventHandler OnAttackFinished;
     private void Awake()
     {
         _animator = GetComponent<Animator>();
@@ -44,9 +47,14 @@ public class CharacterAnimator : MonoBehaviour
 
         }
     }
-
     public void PlayLightAttack()
     {
         _animator.SetBool(ATK, true);
+    }
+
+    public void ATKAnimFinished()
+    {
+        OnAttackFinished?.Invoke(this, EventArgs.Empty);
+        _animator.SetBool(ATK, false);
     }
 }

@@ -4,16 +4,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public enum FightState { IDLE, ATTACKING}
+[RequireComponent(typeof(StanceRotate))]
 public class PlayerController : MonoBehaviour
 {
-    private FightState CurrentState;
-
     //Our input action Asset
     private FightControls _fightControls;
 
+    //Fighter Component
+    private Fighter _fighter;
+
     private CharacterAnimator _characterAnimator;
 
+    //Stance Widget
     private StanceRotate _stanceComponent;
 
     [SerializeField] private float attackCooldown = 0.6f;
@@ -22,19 +24,30 @@ public class PlayerController : MonoBehaviour
 
     private void Awake()
     {
+        //Inputs
         _fightControls = new FightControls();
 
+        //Stance Widget
         _stanceComponent = GetComponentInChildren<StanceRotate>();
 
+        //Animator Manager
         _characterAnimator = GetComponent<CharacterAnimator>();
+        _characterAnimator.OnAttackFinished += CurrentATKFinished;
     }
+
+    private void CurrentATKFinished(object sender, EventArgs e)
+    {
+        Debug.Log("Attack Done");
+        canAttack = true;
+    }
+
     private void Start()
     {
-        CurrentState = FightState.IDLE;
+        _fighter.CurrentState = FightState.IDLE;
     }
     private void OnLightAttack()
     {
-        if(canAttack)
+        if (_fighter.CanAttack)
         {
             canAttack= false;
             currentAttackDelay = 0.0f;
@@ -42,7 +55,6 @@ public class PlayerController : MonoBehaviour
             _characterAnimator.PlayLightAttack();
         }
     }
-
     private void OnHeavyAttack()
     {
         if(canAttack)
@@ -50,11 +62,10 @@ public class PlayerController : MonoBehaviour
             canAttack = false;
             currentAttackDelay = 0.0f;
         }
-    }
-   
+    }   
     private void Update()
     {
-        switch (CurrentState)
+        switch (_fighter.CurrentState)
         {
             case FightState.IDLE:
                 _characterAnimator.SetStanceAnim(_stanceComponent.Angle);
