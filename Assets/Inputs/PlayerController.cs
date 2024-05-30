@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-[RequireComponent(typeof(StanceRotate))]
 public class PlayerController : MonoBehaviour
 {
     //Our input action Asset
@@ -13,19 +12,21 @@ public class PlayerController : MonoBehaviour
     //Fighter Component
     private Fighter _fighter;
 
+    //Animator Component
     private CharacterAnimator _characterAnimator;
+
 
     //Stance Widget
     private StanceRotate _stanceComponent;
-
-    [SerializeField] private float attackCooldown = 0.6f;
-    private float currentAttackDelay;
-    private bool canAttack;
 
     private void Awake()
     {
         //Inputs
         _fightControls = new FightControls();
+
+        //Fighter
+        _fighter = GetComponent<Fighter>();
+        _fighter.FighterInit();
 
         //Stance Widget
         _stanceComponent = GetComponentInChildren<StanceRotate>();
@@ -38,7 +39,7 @@ public class PlayerController : MonoBehaviour
     private void CurrentATKFinished(object sender, EventArgs e)
     {
         Debug.Log("Attack Done");
-        canAttack = true;
+        _fighter.CurrentState = FightState.IDLE;
     }
 
     private void Start()
@@ -49,19 +50,13 @@ public class PlayerController : MonoBehaviour
     {
         if (_fighter.CanAttack)
         {
-            canAttack= false;
-            currentAttackDelay = 0.0f;
-
+            _fighter.LightAttack();
             _characterAnimator.PlayLightAttack();
         }
     }
     private void OnHeavyAttack()
     {
-        if(canAttack)
-        {
-            canAttack = false;
-            currentAttackDelay = 0.0f;
-        }
+
     }   
     private void Update()
     {
@@ -73,27 +68,12 @@ public class PlayerController : MonoBehaviour
                 break;
             case FightState.ATTACKING:
 
-                if (canAttack)
-                {
-                    canAttack = false;
-                    _characterAnimator.PlayLightAttack();
-                }
                 break;
             default:
                 break;
         }
 
-        if (currentAttackDelay < attackCooldown)
-        {
-            currentAttackDelay += Time.deltaTime;
-        }
-        else
-        {
-            if (!canAttack)
-            {
-                canAttack = true;
-            }
-        }
+        
     }
     
 }

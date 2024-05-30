@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class StanceRotate : MonoBehaviour
 {
@@ -21,7 +22,7 @@ public class StanceRotate : MonoBehaviour
     [SerializeField] private float DeadZone = 0.05f;
     private float StanceDeadZone;
 
-    public bool BBB;
+    public bool DisableUI;
     
     private void Start()
     {
@@ -29,9 +30,18 @@ public class StanceRotate : MonoBehaviour
         ParentQuaternion.x = 0.0f;
         ParentQuaternion.y = 0.0f;
 
-        Cursor.visible = false;
+        UnityEngine.Cursor.visible = false;
         StanceDeadZone = Screen.width * DeadZone;
         ScreenCenter = new Vector2(Screen.width/2, Screen.height/2);
+
+        if (DisableUI)
+        {
+            Image[] i = transform.GetComponentsInChildren<Image>();
+            foreach (var item in i)
+            {
+                item.enabled = false;
+            }
+        }
     }
     private void Update()
     {
@@ -43,7 +53,7 @@ public class StanceRotate : MonoBehaviour
     private void LateUpdate()
     {
         MousePos = Input.mousePosition;
-        Cursor.lockState = CursorLockMode.Confined;
+        UnityEngine.Cursor.lockState = CursorLockMode.Confined;
         //-----------------------------
 
         if (MouseOutDeadZone(MousePos))
