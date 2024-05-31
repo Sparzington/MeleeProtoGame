@@ -9,6 +9,11 @@ public class Fighter : MonoBehaviour, IDamageable, IFighter
 
     [SerializeField] private FighterSO FighterData;
 
+    //Combos
+    public Combo[] PossibleCombos;
+    private int CurrentComboIndex;
+    private int MaxComboIndex;
+
     //Fighter Fields
     public int Health;
     private int MaxHealth = 5;
@@ -17,6 +22,8 @@ public class Fighter : MonoBehaviour, IDamageable, IFighter
     public bool Invincible;
     public bool CanAttack;
     public FightState CurrentState;
+
+
 
     private HeldWeapon _heldWeapon;
     public void FighterInit()
@@ -37,19 +44,36 @@ public class Fighter : MonoBehaviour, IDamageable, IFighter
             Debug.LogWarning("! No Fighter Data Set !");
         }
 
+        CurrentComboIndex = 0;
+        MaxComboIndex = 0;
+
+        for (int i = 0; i < PossibleCombos.Length; i++)
+        {
+            int max = PossibleCombos[i].ComboInput.Length;
+            if (i==0)
+            {
+                MaxComboIndex = max;
+                continue;
+            }
+
+            if (max > MaxComboIndex)
+            {
+                MaxComboIndex = max;
+            }
+
+        }
+
         CurrentState = FightState.IDLE;
     }
 
     //Actions
     public void LightAttack()
     {
-        CurrentState = FightState.ATTACKING;
-        ToggleWeapon(true);
+        CurrentComboIndex++;
     }
     public void HeavyAttack()
     {
-        CurrentState = FightState.ATTACKING;
-        ToggleWeapon(true);
+        CurrentComboIndex++;
     }
     public void Block()
     {
@@ -73,11 +97,18 @@ public class Fighter : MonoBehaviour, IDamageable, IFighter
     }
 
     //Weapon
-    public void ToggleWeapon(bool toggle)
+    /// <summary>
+    /// Used in Animation events to toggle On/Off weapon collider
+    /// </summary>
+    public void ActivateWeapon()
     {
-        _heldWeapon.ToggleCollider(toggle);
+        _heldWeapon.ToggleCollider(true);
     }
-
+    public void DeactivateWeapon()
+    {
+        _heldWeapon.ToggleCollider(false);
+    }
+    
     //Health & Damage
     public void TakeDamage(int n)
     {

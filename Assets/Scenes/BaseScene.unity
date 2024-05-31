@@ -2599,6 +2599,18 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1067197890}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1100525158 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5772143032363578718, guid: 633bf362ceeaacb4785885a115b8b4a8,
+    type: 3}
+  m_PrefabInstance: {fileID: 1793949137}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70b342d8ce5c2fd48b8fa3147d48d1d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1235045438
 GameObject:
   m_ObjectHideFlags: 0
@@ -3708,6 +3720,131 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: 7624bbc1dd1f9614593addb6deb23952,
         type: 2}
+    - target: {fileID: 105558989919302358, guid: 633bf362ceeaacb4785885a115b8b4a8,
+        type: 3}
+      propertyPath: PossibleCombos.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 105558989919302358, guid: 633bf362ceeaacb4785885a115b8b4a8,
+        type: 3}
+      propertyPath: PossibleCombos.Array.data[0].ComboInput.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 105558989919302358, guid: 633bf362ceeaacb4785885a115b8b4a8,
+        type: 3}
+      propertyPath: PossibleCombos.Array.data[1].ComboInput.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 105558989919302358, guid: 633bf362ceeaacb4785885a115b8b4a8,
+        type: 3}
+      propertyPath: PossibleCombos.Array.data[2].ComboInput.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 105558989919302358, guid: 633bf362ceeaacb4785885a115b8b4a8,
+        type: 3}
+      propertyPath: PossibleCombos.Array.data[3].ComboInput.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 105558989919302358, guid: 633bf362ceeaacb4785885a115b8b4a8,
+        type: 3}
+      propertyPath: PossibleCombos.Array.data[0].ComboInput.Array.data[2].Tier
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 105558989919302358, guid: 633bf362ceeaacb4785885a115b8b4a8,
+        type: 3}
+      propertyPath: PossibleCombos.Array.data[0].ComboInput.Array.data[3].Tier
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 105558989919302358, guid: 633bf362ceeaacb4785885a115b8b4a8,
+        type: 3}
+      propertyPath: PossibleCombos.Array.data[1].ComboInput.Array.data[1].Tier
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 105558989919302358, guid: 633bf362ceeaacb4785885a115b8b4a8,
+        type: 3}
+      propertyPath: PossibleCombos.Array.data[2].ComboInput.Array.data[1].Tier
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 105558989919302358, guid: 633bf362ceeaacb4785885a115b8b4a8,
+        type: 3}
+      propertyPath: PossibleCombos.Array.data[2].ComboInput.Array.data[2].Tier
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 105558989919302358, guid: 633bf362ceeaacb4785885a115b8b4a8,
+        type: 3}
+      propertyPath: PossibleCombos.Array.data[2].ComboInput.Array.data[3].Tier
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 105558989919302358, guid: 633bf362ceeaacb4785885a115b8b4a8,
+        type: 3}
+      propertyPath: PossibleCombos.Array.data[2].ComboInput.Array.data[4].Tier
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 105558989919302358, guid: 633bf362ceeaacb4785885a115b8b4a8,
+        type: 3}
+      propertyPath: PossibleCombos.Array.data[3].ComboInput.Array.data[1].Tier
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 105558989919302358, guid: 633bf362ceeaacb4785885a115b8b4a8,
+        type: 3}
+      propertyPath: PossibleCombos.Array.data[3].ComboInput.Array.data[2].Tier
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 105558989919302358, guid: 633bf362ceeaacb4785885a115b8b4a8,
+        type: 3}
+      propertyPath: PossibleCombos.Array.data[0].ComboInput.Array.data[1]._ComboLevel
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 105558989919302358, guid: 633bf362ceeaacb4785885a115b8b4a8,
+        type: 3}
+      propertyPath: PossibleCombos.Array.data[0].ComboInput.Array.data[2]._ComboLevel
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 105558989919302358, guid: 633bf362ceeaacb4785885a115b8b4a8,
+        type: 3}
+      propertyPath: PossibleCombos.Array.data[0].ComboInput.Array.data[3]._ComboLevel
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 105558989919302358, guid: 633bf362ceeaacb4785885a115b8b4a8,
+        type: 3}
+      propertyPath: PossibleCombos.Array.data[1].ComboInput.Array.data[1]._ComboLevel
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 105558989919302358, guid: 633bf362ceeaacb4785885a115b8b4a8,
+        type: 3}
+      propertyPath: PossibleCombos.Array.data[2].ComboInput.Array.data[1]._ComboLevel
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 105558989919302358, guid: 633bf362ceeaacb4785885a115b8b4a8,
+        type: 3}
+      propertyPath: PossibleCombos.Array.data[2].ComboInput.Array.data[2]._ComboLevel
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 105558989919302358, guid: 633bf362ceeaacb4785885a115b8b4a8,
+        type: 3}
+      propertyPath: PossibleCombos.Array.data[2].ComboInput.Array.data[3]._ComboLevel
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 105558989919302358, guid: 633bf362ceeaacb4785885a115b8b4a8,
+        type: 3}
+      propertyPath: PossibleCombos.Array.data[2].ComboInput.Array.data[4]._ComboLevel
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 105558989919302358, guid: 633bf362ceeaacb4785885a115b8b4a8,
+        type: 3}
+      propertyPath: PossibleCombos.Array.data[3].ComboInput.Array.data[1]._ComboLevel
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 105558989919302358, guid: 633bf362ceeaacb4785885a115b8b4a8,
+        type: 3}
+      propertyPath: PossibleCombos.Array.data[3].ComboInput.Array.data[2]._ComboLevel
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 625393939917057650, guid: 633bf362ceeaacb4785885a115b8b4a8,
+        type: 3}
+      propertyPath: ArmRig
+      value: 
+      objectReference: {fileID: 1100525158}
     - target: {fileID: 2128106702650334125, guid: 633bf362ceeaacb4785885a115b8b4a8,
         type: 3}
       propertyPath: m_WarningMessage
@@ -5558,6 +5695,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 803d6db21fab93d4fabe284d46498dbc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ArmRig: {fileID: 0}
 --- !u!4 &886832078418751011
 Transform:
   m_ObjectHideFlags: 0
@@ -11036,6 +11174,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   FighterData: {fileID: 11400000, guid: 7624bbc1dd1f9614593addb6deb23952, type: 2}
+  PossibleCombos: []
   Health: 0
   Invincible: 0
   CanAttack: 0

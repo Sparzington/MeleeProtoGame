@@ -36,28 +36,24 @@ public class PlayerController : MonoBehaviour
         _characterAnimator.OnAttackFinished += CurrentATKFinished;
     }
 
+    //Subscribed Events
     private void CurrentATKFinished(object sender, EventArgs e)
     {
         Debug.Log("Attack Done");
-        _fighter.CurrentState = FightState.IDLE;
     }
 
-    private void Start()
-    {
-        _fighter.CurrentState = FightState.IDLE;
-    }
+    //Inputs
     private void OnLightAttack()
     {
-        if (_fighter.CanAttack)
-        {
-            _fighter.LightAttack();
-            _characterAnimator.PlayLightAttack();
-        }
+        bool onRight = _stanceComponent.IsOnRightSide();
+        _fighter.LightAttack();
+        _characterAnimator.PlayLightAttack(onRight);
     }
     private void OnHeavyAttack()
     {
-
-    }   
+        bool onRight = _stanceComponent.IsOnRightSide();
+        _fighter.HeavyAttack();
+    }
     private void Update()
     {
         switch (_fighter.CurrentState)

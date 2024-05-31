@@ -69,6 +69,11 @@ public class StanceRotate : MonoBehaviour
         }
     }
 
+    public bool IsOnRightSide()
+    {
+        return Angle < 90 && Angle > -90;
+    }
+
     /// <summary>
     /// Checks if mouse is outside of set center deadzone.
     /// </summary>

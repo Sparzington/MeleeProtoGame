@@ -2,17 +2,26 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Animations.Rigging;
 
 public class CharacterAnimator : MonoBehaviour
 {
     private Animator _animator;
 
+    [SerializeField] private Rig ArmRig;
+
     //Hashed Animation names
+    //Idle
     private int LH;
     private int LL;
     private int RH;
     private int RL;
-    private int ATK;
+
+    //Attacks
+    private int RightAttack;
+    private int LeftAttack;
+    
+    private int ATK; //Bool
 
     public event EventHandler OnAttackFinished;
     private void Awake()
@@ -24,6 +33,9 @@ public class CharacterAnimator : MonoBehaviour
         RH = Animator.StringToHash("RightAimHigh");
         RH = Animator.StringToHash("RightAimLow");
         ATK = Animator.StringToHash("Attack");
+
+        RightAttack = Animator.StringToHash("RightSlash");
+        LeftAttack = Animator.StringToHash("LeftSlash");
     }
     public void SetStanceAnim(float angle)
     {
@@ -47,14 +59,31 @@ public class CharacterAnimator : MonoBehaviour
 
         }
     }
-    public void PlayLightAttack()
+    public void PlayLightAttack(bool rightSide)
     {
-        _animator.SetBool(ATK, true);
+        if (!_animator.GetBool(ATK))
+        {
+            Debug.Log("Light called");
+
+            ArmRig.weight = 0.0f;
+
+            if (rightSide)
+            {
+                _animator.Play(RightAttack);
+            }
+            else
+            {
+                _animator.Play(LeftAttack);
+            }
+        }
     }
 
     public void ATKAnimFinished()
     {
+        Debug.Log("Finsihe called");
+
+        ArmRig.weight = 1.0f;
+
         OnAttackFinished?.Invoke(this, EventArgs.Empty);
-        _animator.SetBool(ATK, false);
     }
 }
