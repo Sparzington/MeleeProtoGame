@@ -21,7 +21,7 @@ public class CharacterAnimator : MonoBehaviour
     private int RightAttack;
     private int LeftAttack;
     
-    private int ATK; //Bool
+    private int Attacking; //Bool
 
     public event EventHandler OnAttackFinished;
     private void Awake()
@@ -32,7 +32,7 @@ public class CharacterAnimator : MonoBehaviour
         LL = Animator.StringToHash("LeftAimLow");
         RH = Animator.StringToHash("RightAimHigh");
         RH = Animator.StringToHash("RightAimLow");
-        ATK = Animator.StringToHash("Attack");
+        Attacking = Animator.StringToHash("Attack");
 
         RightAttack = Animator.StringToHash("RightSlash");
         LeftAttack = Animator.StringToHash("LeftSlash");
@@ -61,20 +61,17 @@ public class CharacterAnimator : MonoBehaviour
     }
     public void PlayLightAttack(bool rightSide)
     {
-        if (!_animator.GetBool(ATK))
+        Debug.Log("Light called");
+
+        ArmRig.weight = 0.0f;
+
+        if (rightSide)
         {
-            Debug.Log("Light called");
-
-            ArmRig.weight = 0.0f;
-
-            if (rightSide)
-            {
-                _animator.Play(RightAttack);
-            }
-            else
-            {
-                _animator.Play(LeftAttack);
-            }
+            _animator.Play(RightAttack);
+        }
+        else
+        {
+            _animator.Play(LeftAttack);
         }
     }
 

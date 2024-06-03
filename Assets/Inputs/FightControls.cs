@@ -46,10 +46,19 @@ public partial class @FightControls: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""StanceRotate"",
+                    ""name"": ""StanceRotateMNK"",
                     ""type"": ""Value"",
                     ""id"": ""032ce7e2-272e-4884-b495-5fff7ffac1e0"",
                     ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""StanceRotateGP"",
+                    ""type"": ""Value"",
+                    ""id"": ""bae30882-ba8c-40ca-919a-ff6b6b1bd0fd"",
+                    ""expectedControlType"": ""Stick"",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
@@ -101,59 +110,26 @@ public partial class @FightControls: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 },
                 {
-                    ""name"": ""2D Vector"",
-                    ""id"": ""b286d28c-a286-40ce-88a7-64d898503786"",
-                    ""path"": ""2DVector"",
+                    ""name"": """",
+                    ""id"": ""497e700d-4ce3-4d00-a5f8-1d1954ef197e"",
+                    ""path"": ""<Mouse>/position"",
                     ""interactions"": """",
-                    ""processors"": ""NormalizeVector2"",
+                    ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""StanceRotate"",
-                    ""isComposite"": true,
+                    ""action"": ""StanceRotateMNK"",
+                    ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
                 {
-                    ""name"": ""up"",
-                    ""id"": ""f26b7828-46b1-41b8-8bfc-62e718dae294"",
-                    ""path"": ""<Mouse>/delta/up"",
+                    ""name"": """",
+                    ""id"": ""862a4a75-827f-4697-8098-c06bef8f0350"",
+                    ""path"": ""<Gamepad>/rightStick"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""StanceRotate"",
+                    ""action"": ""StanceRotateGP"",
                     ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""down"",
-                    ""id"": ""c644d53f-9cfb-41a2-a14a-e8e78bc6364c"",
-                    ""path"": ""<Mouse>/delta/down"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""StanceRotate"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""left"",
-                    ""id"": ""97781503-5e24-43d9-8668-a7258ed5ed82"",
-                    ""path"": ""<Mouse>/delta/left"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""StanceRotate"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""right"",
-                    ""id"": ""2c0373d7-2085-4a78-8933-86354bf50949"",
-                    ""path"": ""<Mouse>/delta/right"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""StanceRotate"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -164,7 +140,8 @@ public partial class @FightControls: IInputActionCollection2, IDisposable
         m_PlayerStance = asset.FindActionMap("PlayerStance", throwIfNotFound: true);
         m_PlayerStance_LightAttack = m_PlayerStance.FindAction("LightAttack", throwIfNotFound: true);
         m_PlayerStance_HeavyAttack = m_PlayerStance.FindAction("HeavyAttack", throwIfNotFound: true);
-        m_PlayerStance_StanceRotate = m_PlayerStance.FindAction("StanceRotate", throwIfNotFound: true);
+        m_PlayerStance_StanceRotateMNK = m_PlayerStance.FindAction("StanceRotateMNK", throwIfNotFound: true);
+        m_PlayerStance_StanceRotateGP = m_PlayerStance.FindAction("StanceRotateGP", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -228,14 +205,16 @@ public partial class @FightControls: IInputActionCollection2, IDisposable
     private List<IPlayerStanceActions> m_PlayerStanceActionsCallbackInterfaces = new List<IPlayerStanceActions>();
     private readonly InputAction m_PlayerStance_LightAttack;
     private readonly InputAction m_PlayerStance_HeavyAttack;
-    private readonly InputAction m_PlayerStance_StanceRotate;
+    private readonly InputAction m_PlayerStance_StanceRotateMNK;
+    private readonly InputAction m_PlayerStance_StanceRotateGP;
     public struct PlayerStanceActions
     {
         private @FightControls m_Wrapper;
         public PlayerStanceActions(@FightControls wrapper) { m_Wrapper = wrapper; }
         public InputAction @LightAttack => m_Wrapper.m_PlayerStance_LightAttack;
         public InputAction @HeavyAttack => m_Wrapper.m_PlayerStance_HeavyAttack;
-        public InputAction @StanceRotate => m_Wrapper.m_PlayerStance_StanceRotate;
+        public InputAction @StanceRotateMNK => m_Wrapper.m_PlayerStance_StanceRotateMNK;
+        public InputAction @StanceRotateGP => m_Wrapper.m_PlayerStance_StanceRotateGP;
         public InputActionMap Get() { return m_Wrapper.m_PlayerStance; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -251,9 +230,12 @@ public partial class @FightControls: IInputActionCollection2, IDisposable
             @HeavyAttack.started += instance.OnHeavyAttack;
             @HeavyAttack.performed += instance.OnHeavyAttack;
             @HeavyAttack.canceled += instance.OnHeavyAttack;
-            @StanceRotate.started += instance.OnStanceRotate;
-            @StanceRotate.performed += instance.OnStanceRotate;
-            @StanceRotate.canceled += instance.OnStanceRotate;
+            @StanceRotateMNK.started += instance.OnStanceRotateMNK;
+            @StanceRotateMNK.performed += instance.OnStanceRotateMNK;
+            @StanceRotateMNK.canceled += instance.OnStanceRotateMNK;
+            @StanceRotateGP.started += instance.OnStanceRotateGP;
+            @StanceRotateGP.performed += instance.OnStanceRotateGP;
+            @StanceRotateGP.canceled += instance.OnStanceRotateGP;
         }
 
         private void UnregisterCallbacks(IPlayerStanceActions instance)
@@ -264,9 +246,12 @@ public partial class @FightControls: IInputActionCollection2, IDisposable
             @HeavyAttack.started -= instance.OnHeavyAttack;
             @HeavyAttack.performed -= instance.OnHeavyAttack;
             @HeavyAttack.canceled -= instance.OnHeavyAttack;
-            @StanceRotate.started -= instance.OnStanceRotate;
-            @StanceRotate.performed -= instance.OnStanceRotate;
-            @StanceRotate.canceled -= instance.OnStanceRotate;
+            @StanceRotateMNK.started -= instance.OnStanceRotateMNK;
+            @StanceRotateMNK.performed -= instance.OnStanceRotateMNK;
+            @StanceRotateMNK.canceled -= instance.OnStanceRotateMNK;
+            @StanceRotateGP.started -= instance.OnStanceRotateGP;
+            @StanceRotateGP.performed -= instance.OnStanceRotateGP;
+            @StanceRotateGP.canceled -= instance.OnStanceRotateGP;
         }
 
         public void RemoveCallbacks(IPlayerStanceActions instance)
@@ -288,6 +273,7 @@ public partial class @FightControls: IInputActionCollection2, IDisposable
     {
         void OnLightAttack(InputAction.CallbackContext context);
         void OnHeavyAttack(InputAction.CallbackContext context);
-        void OnStanceRotate(InputAction.CallbackContext context);
+        void OnStanceRotateMNK(InputAction.CallbackContext context);
+        void OnStanceRotateGP(InputAction.CallbackContext context);
     }
 }

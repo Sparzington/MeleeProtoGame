@@ -23,6 +23,7 @@ public class StanceRotate : MonoBehaviour
     private float StanceDeadZone;
 
     public bool DisableUI;
+    public bool CodedMouse = false;
     
     private void Start()
     {
@@ -56,17 +57,20 @@ public class StanceRotate : MonoBehaviour
         UnityEngine.Cursor.lockState = CursorLockMode.Confined;
         //-----------------------------
 
-        if (MouseOutDeadZone(MousePos))
+        if (CodedMouse)
         {
-            MouseReset();
+            if (MouseOutDeadZone(MousePos))
+            {
+                MouseReset();
 
-            //
-            //MouseAngleFromLastPos(MousePos, ScreenCenter);
-            //arrowObj.transform.Rotate(transform.forward, Angle);
-            //
+                //
+                //MouseAngleFromLastPos(MousePos, ScreenCenter);
+                //arrowObj.transform.Rotate(transform.forward, Angle);
+                //
 
-            arrowObj.transform.localRotation = MouseAngleFromLastPos(MousePos, ScreenCenter);
-        }
+                arrowObj.transform.localRotation = MouseAngleFromLastPos(MousePos, ScreenCenter);
+            }
+        }        
     }
 
     public bool IsOnRightSide()
