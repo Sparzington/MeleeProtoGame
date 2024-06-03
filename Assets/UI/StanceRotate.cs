@@ -11,6 +11,8 @@ public class StanceRotate : MonoBehaviour
 
     private Quaternion ParentQuaternion;
 
+    private Vector3 GuardRotation;
+
     public float Angle;
     public float DebugAngle;
 
@@ -27,6 +29,8 @@ public class StanceRotate : MonoBehaviour
     
     private void Start()
     {
+        GuardRotation = new Vector3();
+
         ParentQuaternion = transform.rotation;
         ParentQuaternion.x = 0.0f;
         ParentQuaternion.y = 0.0f;
@@ -126,4 +130,10 @@ public class StanceRotate : MonoBehaviour
 
         return newRot;
     }   
+
+    public void UpdateRotation(float angle)
+    {
+        GuardRotation.z = angle-90;
+        arrowObj.transform.localEulerAngles = GuardRotation;
+    }
 }

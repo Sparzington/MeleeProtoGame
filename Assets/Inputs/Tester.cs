@@ -11,6 +11,7 @@ public class Tester : MonoBehaviour
     //Stance Widget
     private StanceRotate _stanceComponent;
 
+    //Camera
     private Camera cam;
 
     public float Angle;
@@ -28,7 +29,8 @@ public class Tester : MonoBehaviour
     public void OnStanceRotateGP(InputValue value)
     {
         Vector2 f = value.Get<Vector2>();
-        Angle = GetAngle(f.normalized);
+        Angle = GetAngle(f);
+        _stanceComponent.UpdateRotation(Angle);
     }
 
     void Update()
@@ -41,9 +43,12 @@ public class Tester : MonoBehaviour
 
     private float GetAngle(Vector2 incoming)
     {
-        float angle = Mathf.Atan2(incoming.y - Vector2.right.y, incoming.x - Vector2.right.x) * 180 / Mathf.PI;
+        //float angle = Mathf.Atan2(incoming.y - Vector2.right.y, incoming.x - Vector2.right.x) * 180 / Mathf.PI;
+        float angle = Mathf.Atan2(incoming.y, incoming.x) * 180 / Mathf.PI;
 
 
         return angle;
     }
+
+    
 }
