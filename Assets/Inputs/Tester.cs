@@ -14,6 +14,14 @@ public class Tester : MonoBehaviour
     //Camera
     private Camera cam;
 
+    //Fields
+    [Range(0f, 1f)]
+    [SerializeField] private float DeadZone = 0.05f;
+    private float StanceDeadZone;
+
+    private Vector3 MousePos;
+    private Vector3 ScreenCenter;
+
     public float Angle;
     void Start()
     {
@@ -22,10 +30,11 @@ public class Tester : MonoBehaviour
 
         //Stance Widget
         _stanceComponent = GetComponentInChildren<StanceRotate>();
+        StanceDeadZone = Screen.width * DeadZone;
+        ScreenCenter = new Vector2(Screen.width / 2, Screen.height / 2);
 
         cam = Camera.main;
     }
-
     public void OnStanceRotateGP(InputValue value)
     {
         Vector2 f = value.Get<Vector2>();
@@ -33,19 +42,40 @@ public class Tester : MonoBehaviour
         _stanceComponent.UpdateRotation(Angle);
     }
 
-    void Update()
-    {
-        //Vector2 f = _fightControls.PlayerStance.TestStance.ReadValue<Vector2>();
-        //Vector2 ff = cam.ScreenToWorldPoint(f);
+    private void OnStanceRotateMNK(InputValue value)
+    {       
 
-        //Debug.Log(ff);
+        MousePos = value.Get<Vector2>();
+        if (MouseOutDeadZone(MousePos))
+        {
+            Debug.Log("Outside");
+
+            Angle = GetAngle(MousePos-ScreenCenter);
+            MouseReset();
+            _stanceComponent.UpdateRotation(Angle); 
+        }
+        else
+        {
+            Cursor.lockState = CursorLockMode.Confined;
+        }        
     }
+    private bool MouseOutDeadZone(Vector3 mouse)
+    {
+        Vector3 dist = mouse - ScreenCenter;
 
+        return dist.magnitude > StanceDeadZone;
+    }
+    private void MouseReset()
+    {
+        if (Cursor.lockState != CursorLockMode.Locked)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+        }
+    }
     private float GetAngle(Vector2 incoming)
     {
         //float angle = Mathf.Atan2(incoming.y - Vector2.right.y, incoming.x - Vector2.right.x) * 180 / Mathf.PI;
         float angle = Mathf.Atan2(incoming.y, incoming.x) * 180 / Mathf.PI;
-
 
         return angle;
     }

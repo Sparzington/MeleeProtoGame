@@ -4,11 +4,14 @@ using UnityEngine;
 
 public class HideCursor : MonoBehaviour
 {
-    private void LateUpdate()
+    private void Awake()
     {
-        if (Cursor.visible == true)
-        {
-            Cursor.visible = false;
-        }
+        Cursor.lockState= CursorLockMode.Locked; 
+    }
+
+    private void Update()
+    {
+        Cursor.visible = true;
+
     }
 }

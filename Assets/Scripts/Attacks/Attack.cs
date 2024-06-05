@@ -4,17 +4,14 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public enum AttackTier { LIGHT, HEAVY }
-public enum ComboLevel { START, MIDDLEFINISHER, FINISHER }
 
 [Serializable]
 public class Attack
 {
     public AttackTier Tier;
-    public ComboLevel _ComboLevel;
 
-    public Attack(AttackTier tier, ComboLevel comboLevel)
+    public Attack(AttackTier tier)
     {
         Tier = tier;
-        _ComboLevel = comboLevel;
     }
 }

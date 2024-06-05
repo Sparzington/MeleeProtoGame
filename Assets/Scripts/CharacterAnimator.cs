@@ -28,10 +28,10 @@ public class CharacterAnimator : MonoBehaviour
     {
         _animator = GetComponent<Animator>();
 
-        LH = Animator.StringToHash("LeftAimHigh");
-        LL = Animator.StringToHash("LeftAimLow");
-        RH = Animator.StringToHash("RightAimHigh");
-        RH = Animator.StringToHash("RightAimLow");
+        LH = Animator.StringToHash("LeftSlash");
+        LL = Animator.StringToHash("LeftUpswing");
+        RH = Animator.StringToHash("RightSlash");
+        RL = Animator.StringToHash("RightUpswing");
         Attacking = Animator.StringToHash("Attack");
 
         RightAttack = Animator.StringToHash("RightSlash");
@@ -61,17 +61,26 @@ public class CharacterAnimator : MonoBehaviour
     }
     public void PlayLightAttack(bool rightSide)
     {
-        Debug.Log("Light called");
 
-        ArmRig.weight = 0.0f;
+    }
 
-        if (rightSide)
+    public void PlayAttack(float angle)
+    {
+        if (angle > 0 && angle <= 90)
         {
-            _animator.Play(RightAttack);
+            _animator.Play(RH);
         }
-        else
+        else if (angle > 90 && angle <= 179)
         {
-            _animator.Play(LeftAttack);
+            _animator.Play(LH);
+        }
+        else if (angle < -90 && angle >= -179)
+        {
+            _animator.Play(LL);
+        }
+        else if (angle < 0 && angle >= -90)
+        {
+            _animator.Play(RL);
         }
     }
 
