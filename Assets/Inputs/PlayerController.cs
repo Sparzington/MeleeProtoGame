@@ -40,16 +40,9 @@ public class PlayerController : MonoBehaviour
 
         //Animator Manager
         _characterAnimator = GetComponent<CharacterAnimator>();
-        _characterAnimator.OnAttackFinished += CurrentATKFinished;
 
         StanceDeadZone = Screen.width * DeadZone;
         ScreenCenter = new Vector2(Screen.width / 2, Screen.height / 2);
-    }
-
-    //Subscribed Events
-    private void CurrentATKFinished(object sender, EventArgs e)
-    {
-        Debug.Log("Attack Done");
     }
 
     //Inputs - Stance Aiming
@@ -89,15 +82,17 @@ public class PlayerController : MonoBehaviour
         _fighter.LightAttack();
         if (_fighter.CanAttack)
         {
-            _characterAnimator.PlayAttack(Angle);
+            _characterAnimator.PlayAttack(Angle,AttackTier.LIGHT );
         }
-        //_characterAnimator.PlayLightAttack(onRight);
-
     }
     private void OnHeavyAttack()
     {
         bool onRight = _stanceComponent.IsOnRightSide();
         _fighter.HeavyAttack();
+        if (_fighter.CanAttack)
+        {
+            _characterAnimator.PlayAttack(Angle, AttackTier.HEAVY);
+        }
     }
 
     //Helpers

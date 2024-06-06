@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Animations.Rigging;
 
@@ -9,33 +10,60 @@ public class CharacterAnimator : MonoBehaviour
     private Animator _animator;
 
     [SerializeField] private Rig ArmRig;
+    private float rigResetTimer;
+    private float rigResetSpeed = 5f;
 
     //Hashed Animation names
     //Idle
-    private int LH;
-    private int LL;
-    private int RH;
-    private int RL;
+    private int LeftHeavyHigh;
+    private int LeftLow;
+    private int RightHeavyHigh;
+    private int RightLow;
 
     //Attacks
-    private int RightAttack;
-    private int LeftAttack;
+    private int RightLight;
+    private int LeftLight;
     
     private int Attacking; //Bool
 
-    public event EventHandler OnAttackFinished;
+    private  const float animTransitionTime = 0.08f;
+
+    
     private void Awake()
     {
         _animator = GetComponent<Animator>();
 
-        LH = Animator.StringToHash("LeftSlash");
-        LL = Animator.StringToHash("LeftUpswing");
-        RH = Animator.StringToHash("RightSlash");
-        RL = Animator.StringToHash("RightUpswing");
-        Attacking = Animator.StringToHash("Attack");
+        LeftHeavyHigh = Animator.StringToHash("LeftSlash");
+        LeftLow = Animator.StringToHash("LeftUpswing");
+        LeftLight = Animator.StringToHash("LeftLight");
 
-        RightAttack = Animator.StringToHash("RightSlash");
-        LeftAttack = Animator.StringToHash("LeftSlash");
+        RightHeavyHigh = Animator.StringToHash("RightSlash");
+        RightLow = Animator.StringToHash("RightUpswing");
+        RightLight = Animator.StringToHash("RightLight");
+
+        //anim bool
+        Attacking = Animator.StringToHash("Attack");
+    }
+    private void LateUpdate()
+    {
+        UpdateIKRig();
+    }
+
+    private void UpdateIKRig()
+    {
+        if (_animator.GetBool(Attacking)) 
+        {
+            ArmRig.weight = 0;
+            rigResetTimer = 0.0f;
+        }
+        else
+        {
+            if (ArmRig.weight  != 1)
+            {
+                rigResetTimer += Time.deltaTime * rigResetSpeed;
+                ArmRig.weight = Mathf.MoveTowards(0, 1, rigResetTimer);
+            }            
+        }
     }
     public void SetStanceAnim(float angle)
     {
@@ -59,37 +87,46 @@ public class CharacterAnimator : MonoBehaviour
 
         }
     }
-    public void PlayLightAttack(bool rightSide)
-    {
 
-    }
-
-    public void PlayAttack(float angle)
-    {
+    public void PlayAttack(float angle, AttackTier tier)
+    {       
         if (angle > 0 && angle <= 90)
         {
-            _animator.Play(RH);
+            if (tier == AttackTier.HEAVY)
+            {
+                //_animator.Play(RightHeavyHigh);
+                _animator.CrossFade(RightHeavyHigh, animTransitionTime);
+                return;
+            }
+            _animator.CrossFade(RightLight, animTransitionTime);
+            //_animator.Play(RightLight);
         }
         else if (angle > 90 && angle <= 179)
         {
-            _animator.Play(LH);
+            if (tier == AttackTier.HEAVY)
+            {
+                _animator.CrossFade(LeftHeavyHigh, animTransitionTime);
+                return;
+            }
+            _animator.CrossFade(LeftLight, animTransitionTime);
         }
         else if (angle < -90 && angle >= -179)
         {
-            _animator.Play(LL);
+            if (tier == AttackTier.HEAVY)
+            {
+                _animator.CrossFade(LeftLow, animTransitionTime);
+                return;
+            }
+            _animator.CrossFade(LeftLow, animTransitionTime);
         }
         else if (angle < 0 && angle >= -90)
         {
-            _animator.Play(RL);
+            if (tier == AttackTier.HEAVY)
+            {
+                _animator.CrossFade(RightLow, animTransitionTime);
+                return;
+            }
+            _animator.CrossFade(RightLow, animTransitionTime);
         }
-    }
-
-    public void ATKAnimFinished()
-    {
-        Debug.Log("Finsihe called");
-
-        ArmRig.weight = 1.0f;
-
-        OnAttackFinished?.Invoke(this, EventArgs.Empty);
     }
 }

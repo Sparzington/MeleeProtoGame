@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -8,6 +9,7 @@ public class AttackSlider : MonoBehaviour
 {
     private Slider _slider;
     private TextMeshProUGUI _text;
+    [SerializeField]private TextMeshProUGUI _Indexext;
 
     public static AttackSlider instance;
     
@@ -72,4 +74,10 @@ public class AttackSlider : MonoBehaviour
             _text.color = Color.red;
         }
     }
+
+    public void UpdateIndexTest(int n)
+    {
+        _Indexext.text = $"Doing combo {n}";
+    }
+
 }

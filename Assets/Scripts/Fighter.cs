@@ -12,8 +12,9 @@ public class Fighter : MonoBehaviour, IDamageable, IFighter
 
     //Combos
     public Combo[] PossibleCombos;
-    private int CurrentComboIndex;
+    [SerializeField]private int CurrentComboIndex = -1;
     private int MaxComboIndex;
+    private int doingIndex=-1;
 
     //Fighter Fields
     public int Health;
@@ -30,6 +31,7 @@ public class Fighter : MonoBehaviour, IDamageable, IFighter
     private float currentBuffer;
     private bool DoFullRecovery;
     private bool CanCombo;
+    
 
     private Attack QueuedAttack;
     private Attack PreviousAttack;
@@ -54,7 +56,7 @@ public class Fighter : MonoBehaviour, IDamageable, IFighter
             Debug.LogWarning("! No Fighter Data Set !");
         }
 
-        CurrentComboIndex = 0;
+        CurrentComboIndex = -1;
         MaxComboIndex = 0;
 
         for (int i = 0; i < PossibleCombos.Length; i++)
@@ -86,6 +88,7 @@ public class Fighter : MonoBehaviour, IDamageable, IFighter
     {
         AttackSlider.instance.UpdateComboCount(CurrentComboIndex);
         AttackSlider.instance.UpdateCanComboColor(CanCombo);
+        AttackSlider.instance.UpdateIndexTest(doingIndex+1);
     }
 
     //Actions
@@ -108,21 +111,27 @@ public class Fighter : MonoBehaviour, IDamageable, IFighter
             if (CurrentComboIndex < MaxComboIndex)
             {
                 //If we are queueing another attack
-                if (CurrentComboIndex > 0 && CanCombo)
+                if (CurrentComboIndex > -1 && CanCombo)
                 {
                     if (CheckForCombo())
                     {
                         Debug.Log("IS valid");
+                        PreviousAttack = QueuedAttack;
                         CurrentComboIndex++;
                     }
                     else
                     {
-                        CurrentComboIndex = 0;
+                        Debug.Log("NOT valid");
+                        CanAttack = false;
+                        PreviousAttack = null;
+                        CurrentComboIndex = -1;
                     }
                 }
                 else
                 {
                     //If we are starting a FRESH combo
+
+                    PreviousAttack = QueuedAttack;
                     CurrentComboIndex++;
                 }
             }
@@ -141,15 +150,29 @@ public class Fighter : MonoBehaviour, IDamageable, IFighter
         {
             if (PossibleCombos[i].ComboInput.Length-1 >= CurrentComboIndex)
             {
-                if (PossibleCombos[i].ComboInput[CurrentComboIndex].Tier == QueuedAttack.Tier)
+                if (CurrentComboIndex>0)
                 {
-                    return true;
+                    if (PossibleCombos[i].ComboInput[CurrentComboIndex].Tier == QueuedAttack.Tier &&
+                    PreviousAttack == PossibleCombos[i].ComboInput[CurrentComboIndex - 1])
+                    {
+                        doingIndex = i;
+                        return true;
+                    }
+                    else
+                    {
+                        if (PossibleCombos[i].ComboInput[CurrentComboIndex].Tier == QueuedAttack.Tier)
+                        {
+                            doingIndex = i;
+                            return true;
+                        }
+                    }
                 }
+                
             }            
         }
 
         return false;
-    }
+    }    
 
     //States
     public void WindUp() 
@@ -194,7 +217,8 @@ public class Fighter : MonoBehaviour, IDamageable, IFighter
             {
                 CanAttack = true;
                 DoFullRecovery = false;
-                CurrentComboIndex= 0;
+                CurrentComboIndex= -1;
+                PreviousAttack = null;
             }
         }
         else
