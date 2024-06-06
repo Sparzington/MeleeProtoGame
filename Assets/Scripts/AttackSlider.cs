@@ -1,11 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class AttackSlider : MonoBehaviour
 {
     private Slider _slider;
+    private TextMeshProUGUI _text;
 
     public static AttackSlider instance;
     
@@ -17,7 +19,10 @@ public class AttackSlider : MonoBehaviour
     private void Awake()
     {
         instance = this;
-        _slider = GetComponent<Slider>();
+        _slider = GetComponentInChildren<Slider>();
+        _text = GetComponentInChildren<TextMeshProUGUI>();
+
+        _text.text = "0";
     }
 
     // Update is called once per frame
@@ -46,6 +51,25 @@ public class AttackSlider : MonoBehaviour
 
     public void SetTimer(float value)
     {
+        _slider.value = 0;
+        timerValue = 0.0f;
         max = value;
+    }
+
+    public void UpdateComboCount(int newCount)
+    {
+        _text.text = newCount.ToString();
+    }
+
+    public void UpdateCanComboColor(bool canCombo)
+    {
+        if (canCombo)
+        {
+            _text.color = Color.green;
+        }
+        else
+        {
+            _text.color = Color.red;
+        }
     }
 }

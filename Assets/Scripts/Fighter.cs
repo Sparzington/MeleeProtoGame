@@ -29,6 +29,7 @@ public class Fighter : MonoBehaviour, IDamageable, IFighter
     [SerializeField] private float fullRecoveryBuffer = 0.6f;
     private float currentBuffer;
     private bool DoFullRecovery;
+    private bool CanCombo;
 
     private Attack QueuedAttack;
     private Attack PreviousAttack;
@@ -77,50 +78,57 @@ public class Fighter : MonoBehaviour, IDamageable, IFighter
 
     private void Update()
     {
+        CanCombo = !DoFullRecovery & currentBuffer < inputBuffer;
         UpdateBufferValue();
+    }
+
+    private void LateUpdate()
+    {
+        AttackSlider.instance.UpdateComboCount(CurrentComboIndex);
+        AttackSlider.instance.UpdateCanComboColor(CanCombo);
     }
 
     //Actions
     public void LightAttack()
     {
+        QueueNextAttack(AttackTier.LIGHT);
+    }
+    public void HeavyAttack()
+    {
+        QueueNextAttack(AttackTier.HEAVY);
+    }
+
+    private void QueueNextAttack(AttackTier newTier)
+    {
         if (CanAttack)
         {
-            QueuedAttack = new Attack(AttackTier.LIGHT);
+            QueuedAttack = new Attack(newTier);
+
+            //Check if we are past the max input count
             if (CurrentComboIndex < MaxComboIndex)
             {
-
-                if (CurrentComboIndex > 0 && currentBuffer < inputBuffer)
+                //If we are queueing another attack
+                if (CurrentComboIndex > 0 && CanCombo)
                 {
                     if (CheckForCombo())
                     {
                         Debug.Log("IS valid");
                         CurrentComboIndex++;
-                        currentBuffer = 0.0f;
                     }
                     else
                     {
-                        Debug.Log("NOT valid");
+                        CurrentComboIndex = 0;
                     }
                 }
                 else
                 {
-                    //INITIAL attack
-                    currentBuffer = 0.0f;
+                    //If we are starting a FRESH combo
+                    CurrentComboIndex++;
                 }
             }
         }
-        
-    }
-    public void HeavyAttack()
-    {
-        QueuedAttack = new Attack(AttackTier.HEAVY);
 
-        //If Valid input
-        if (true)
-        {
-            PreviousAttack = QueuedAttack;
-            CurrentComboIndex++;
-        }
+        //AttackSlider.instance.UpdateComboCount(CurrentComboIndex);
     }
     public void Block()
     {
@@ -159,6 +167,8 @@ public class Fighter : MonoBehaviour, IDamageable, IFighter
         Debug.Log("Recover");
 
         CanAttack = true;
+        currentBuffer = 0.0f;
+
         AttackSlider.instance.SetTimer(inputBuffer);        
     }
 
@@ -166,6 +176,7 @@ public class Fighter : MonoBehaviour, IDamageable, IFighter
     {
         CanAttack = false;
         DoFullRecovery = true;
+
         currentBuffer = 0.0f;
         AttackSlider.instance.SetTimer(fullRecoveryBuffer);
     }
@@ -183,6 +194,7 @@ public class Fighter : MonoBehaviour, IDamageable, IFighter
             {
                 CanAttack = true;
                 DoFullRecovery = false;
+                CurrentComboIndex= 0;
             }
         }
         else
