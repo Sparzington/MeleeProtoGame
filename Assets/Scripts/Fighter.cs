@@ -121,8 +121,8 @@ public class Fighter : MonoBehaviour, IDamageable, IFighter
 
                 break;
             case FightState.ATTACKING:
-
-                currentBuffer= 0.0f;
+                CanAttack = false;
+                currentBuffer = 0.0f;
 
                 break;
 
