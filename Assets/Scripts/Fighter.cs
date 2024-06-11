@@ -33,12 +33,35 @@ public class Fighter : MonoBehaviour, IDamageable, IFighter
     private bool DoComboRecovery;
     private bool CanCombo;
     
-
+    //Attack stuff
     private Attack QueuedAttack;
     private Attack PreviousAttack;
+    private ComboLevel _currentAttackLevel;
 
     //Weapon
     private HeldWeapon _heldWeapon;
+    private void Start()
+    {
+        _heldWeapon.OnWeaponStrike += OnEnemyHit;
+    }
+
+    private void OnEnemyHit(object sender, Fighter e)
+    {
+        switch (QueuedAttack.Tier)
+        {
+            case AttackTier.LIGHT:
+                e.TakeDamage(LightDamage);
+
+                break;
+            case AttackTier.HEAVY:
+                e.TakeDamage(HeavyDamage);
+                
+                break;
+            default:
+                break;
+        }
+    }
+
     public void FighterInit()
     {
         _heldWeapon = GetComponentInChildren<HeldWeapon>();
@@ -248,40 +271,17 @@ public class Fighter : MonoBehaviour, IDamageable, IFighter
                             PreviousAttack.Tier == PossibleCombos[i].ComboInput[CurrentComboIndex-1].Tier)
                         {
                             doingIndex = i;
+                            _currentAttackLevel = PossibleCombos[i].ComboInput[CurrentComboIndex].Level;
                             return true;
                         }
                     }
                     else
                     {
                         doingIndex = i;
+                        _currentAttackLevel = PossibleCombos[i].ComboInput[CurrentComboIndex].Level;
                         return true;
                     }
                 }
-
-                /*
-                if (CurrentComboIndex>0)
-                {
-                    
-
-                    //Old 
-                    if (PossibleCombos[i].ComboInput[CurrentComboIndex].Tier == QueuedAttack.Tier)
-                    {
-                        if (i-CurrentComboIndex > -1 && PreviousAttack == PossibleCombos[i].ComboInput[CurrentComboIndex - 1])
-                        {
-                            doingIndex = i;
-                            return true;
-                        }                        
-                    }
-                    else
-                    {
-                        if (PossibleCombos[i].ComboInput[CurrentComboIndex].Tier == QueuedAttack.Tier)
-                        {
-                            doingIndex = i;
-                            return true;
-                        }
-                    }
-                }
-                */
             }            
         }
 
@@ -303,6 +303,7 @@ public class Fighter : MonoBehaviour, IDamageable, IFighter
     {
         Debug.Log("Attack");
         CurrentState = FightState.ATTACKING;
+        _heldWeapon.ToggleCollider(true);
 
     }
     public void Recover()
@@ -310,7 +311,8 @@ public class Fighter : MonoBehaviour, IDamageable, IFighter
         Debug.Log("Recover");
 
         CurrentState = FightState.COMBORECOVER;
-        
+        _heldWeapon.ToggleCollider(false);
+
         CanAttack = true;
         AttackSlider.instance.SetTimer(inputBuffer);        
     }
@@ -362,10 +364,16 @@ public class Fighter : MonoBehaviour, IDamageable, IFighter
     //Health & Damage
     public void TakeDamage(int n)
     {
-        throw new NotImplementedException();
+        Debug.Log($"Took {n} damage");
+        Health -= n;
+        if (Health < 0)
+        {
+            Health = -1;
+            Die();
+        }
     }
     public void Die()
     {
-        throw new NotImplementedException();
+        Debug.Log("Died!!");
     }
 }

@@ -6,7 +6,8 @@ public class HideCursor : MonoBehaviour
 {
     private void Awake()
     {
-        Cursor.lockState= CursorLockMode.Locked; 
+        Cursor.lockState= CursorLockMode.Locked;
+        Application.targetFrameRate = 60;
     }
 
     private void Update()

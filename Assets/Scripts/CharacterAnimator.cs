@@ -9,21 +9,39 @@ public class CharacterAnimator : MonoBehaviour
 {
     private Animator _animator;
 
-    [SerializeField] private Rig ArmRig;
+    [Header("IK Rigs")]
+    [SerializeField] private Rig LeftArmRig;
+    [SerializeField] private Rig RightArmRig;
     private float rigResetTimer;
     private float rigResetSpeed = 5f;
 
     //Hashed Animation names
-    //Idle
-    private int LeftHeavyHigh;
+        //Idle
+    private int LeftHigh;
     private int LeftLow;
-    private int RightHeavyHigh;
-    private int RightLow;
+    private int RightHigh;
+    private int _RightLow;
+        //Attacks
+    private int _LeftLightHigh;
+    private int _LeftHeavyHigh;
+    private int _LeftLightLow;
+    private int _LeftHeavyLow;
+    private int _RightLightHigh;
+    private int _RightHeavyHigh;
+    private int _RightLightLow;
+    private int _RightHeavyLow;
 
-    //Attacks
-    private int RightLight;
-    private int LeftLight;
-    
+    //String Hash names
+    [Header("Anim Hash Names")]
+    [SerializeField] private string LeftLightHigh;
+    [SerializeField] private string LeftHeavyHigh;
+    [SerializeField] private string LeftLightLower;
+    [SerializeField] private string LeftHeavyLower;
+    [SerializeField] private string RightLightHigh;
+    [SerializeField] private string RightHeavHigh;
+    [SerializeField] private string RightLightLower;
+    [SerializeField] private string RightHeavyLower;
+
     private int Attacking; //Bool
 
     private  const float animTransitionTime = 0.08f;
@@ -33,16 +51,25 @@ public class CharacterAnimator : MonoBehaviour
     {
         _animator = GetComponent<Animator>();
 
-        LeftHeavyHigh = Animator.StringToHash("LeftSlash");
-        LeftLow = Animator.StringToHash("LeftUpswing");
-        LeftLight = Animator.StringToHash("LeftLight");
-
-        RightHeavyHigh = Animator.StringToHash("RightSlash");
-        RightLow = Animator.StringToHash("RightUpswing");
-        RightLight = Animator.StringToHash("RightLight");
+        InitHash(ref _LeftLightHigh, LeftLightHigh);
+        InitHash(ref _LeftHeavyHigh, LeftHeavyHigh);
+        InitHash(ref _LeftLightLow, LeftLightLower);
+        InitHash(ref _LeftHeavyLow, LeftHeavyLower);
+        InitHash(ref _RightLightHigh, RightLightHigh);
+        InitHash(ref _RightHeavyHigh, RightHeavHigh);
+        InitHash(ref _RightLightLow, RightLightLower);
+        InitHash(ref _RightHeavyLow, RightHeavyLower);
 
         //anim bool
         Attacking = Animator.StringToHash("Attack");
+    }
+
+    private void InitHash(ref int hash, string animName)
+    {
+        if (animName != null)
+        {
+            hash = Animator.StringToHash(animName);
+        }
     }
     private void LateUpdate()
     {
@@ -53,15 +80,17 @@ public class CharacterAnimator : MonoBehaviour
     {
         if (_animator.GetBool(Attacking)) 
         {
-            ArmRig.weight = 0;
+            RightArmRig.weight = 0;
+            LeftArmRig.weight = 0;
             rigResetTimer = 0.0f;
         }
         else
         {
-            if (ArmRig.weight  != 1)
+            if (RightArmRig.weight  != 1)
             {
                 rigResetTimer += Time.deltaTime * rigResetSpeed;
-                ArmRig.weight = Mathf.MoveTowards(0, 1, rigResetTimer);
+                RightArmRig.weight = Mathf.MoveTowards(0, 1, rigResetTimer);
+                LeftArmRig.weight = Mathf.MoveTowards(0, 1, rigResetTimer);
             }            
         }
     }
@@ -95,38 +124,38 @@ public class CharacterAnimator : MonoBehaviour
             if (tier == AttackTier.HEAVY)
             {
                 //_animator.Play(RightHeavyHigh);
-                _animator.CrossFade(RightHeavyHigh, animTransitionTime);
+                _animator.CrossFade(_RightHeavyHigh, animTransitionTime);
                 return;
             }
-            _animator.CrossFade(RightLight, animTransitionTime);
+            _animator.CrossFade(_RightLightHigh, animTransitionTime);
             //_animator.Play(RightLight);
         }
         else if (angle > 90 && angle <= 179)
         {
             if (tier == AttackTier.HEAVY)
             {
-                _animator.CrossFade(LeftHeavyHigh, animTransitionTime);
+                _animator.CrossFade(_LeftHeavyHigh, animTransitionTime);
                 return;
             }
-            _animator.CrossFade(LeftLight, animTransitionTime);
+            _animator.CrossFade(_LeftLightHigh, animTransitionTime);
         }
         else if (angle < -90 && angle >= -179)
         {
             if (tier == AttackTier.HEAVY)
             {
-                _animator.CrossFade(LeftLow, animTransitionTime);
+                _animator.CrossFade(_LeftHeavyLow, animTransitionTime);
                 return;
             }
-            _animator.CrossFade(LeftLow, animTransitionTime);
+            _animator.CrossFade(_LeftLightLow, animTransitionTime);
         }
         else if (angle < 0 && angle >= -90)
         {
             if (tier == AttackTier.HEAVY)
             {
-                _animator.CrossFade(RightLow, animTransitionTime);
+                _animator.CrossFade(_RightHeavyLow, animTransitionTime);
                 return;
             }
-            _animator.CrossFade(RightLow, animTransitionTime);
+            _animator.CrossFade(_RightLightLow, animTransitionTime);
         }
     }
 }

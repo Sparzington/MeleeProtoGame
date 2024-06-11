@@ -4,15 +4,35 @@ using UnityEngine;
 
 public class EnemyFighter : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    //Fighter Component
+    private Fighter _fighter;
+
+    //Stance Widget
+    private StanceRotate _stanceComponent;
+
+    //Stance angle
+    public float Angle;
+
+
+    private void Awake()
     {
-        
+        //Fighter
+        _fighter = GetComponent<Fighter>();
+        _fighter.FighterInit();
+
+        //Stance Widget
+            //_stanceComponent = GetComponentInChildren<StanceRotate>();
     }
 
-    // Update is called once per frame
-    void Update()
+    public void EnemyLightAttack()
     {
-        
+
     }
+
+    public void EnemyHeavyAttack()
+    {
+
+    }
+
+
 }
