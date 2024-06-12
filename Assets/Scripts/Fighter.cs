@@ -23,7 +23,7 @@ public class Fighter : MonoBehaviour, IDamageable, IFighter
     private int HeavyDamage;
     public bool Invincible;
     public bool CanAttack;
-    public FightState CurrentState;
+    [SerializeField] private FightState CurrentState;
 
     //Input Buffers
     [SerializeField] private float inputBuffer = 0.6f;
@@ -38,8 +38,18 @@ public class Fighter : MonoBehaviour, IDamageable, IFighter
     private Attack PreviousAttack;
     private ComboLevel _currentAttackLevel;
 
+    public FightState currentState
+    {
+        get
+        {
+            return CurrentState;
+        }
+    }
+
     //Weapon
     private HeldWeapon _heldWeapon;
+
+    public bool DebugWindow;
     private void Start()
     {
         _heldWeapon.OnWeaponStrike += OnEnemyHit;
@@ -199,9 +209,13 @@ public class Fighter : MonoBehaviour, IDamageable, IFighter
 
     private void LateUpdate()
     {
-        AttackSlider.instance.UpdateComboCount(CurrentComboIndex);
-        AttackSlider.instance.UpdateCanComboColor(CanCombo);
-        AttackSlider.instance.UpdateIndexTest(doingIndex+1);
+        if (DebugWindow)
+        {
+            AttackSlider.instance.UpdateComboCount(CurrentComboIndex);
+            AttackSlider.instance.UpdateCanComboColor(CanCombo);
+            AttackSlider.instance.UpdateIndexTest(doingIndex + 1);
+        }
+        
     }
 
     //Actions

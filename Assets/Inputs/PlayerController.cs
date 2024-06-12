@@ -120,7 +120,7 @@ public class PlayerController : MonoBehaviour
     #endregion
     private void Update()
     {
-        switch (_fighter.CurrentState)
+        switch (_fighter.currentState)
         {
             case FightState.IDLE:
                 _characterAnimator.SetStanceAnim(_stanceComponent.Angle);

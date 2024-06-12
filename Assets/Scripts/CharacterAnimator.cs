@@ -7,7 +7,11 @@ using UnityEngine.Animations.Rigging;
 
 public class CharacterAnimator : MonoBehaviour
 {
+    //Animator component
     private Animator _animator;
+
+    //Fighter component - Read Only
+    private Fighter _fighter;
 
     [Header("IK Rigs")]
     [SerializeField] private Rig LeftArmRig;
@@ -42,7 +46,7 @@ public class CharacterAnimator : MonoBehaviour
     [SerializeField] private string RightLightLower;
     [SerializeField] private string RightHeavyLower;
 
-    private int Attacking; //Bool
+    private int Attack; //Bool
 
     private  const float animTransitionTime = 0.08f;
 
@@ -50,6 +54,8 @@ public class CharacterAnimator : MonoBehaviour
     private void Awake()
     {
         _animator = GetComponent<Animator>();
+
+        _fighter = GetComponent<Fighter>();
 
         InitHash(ref _LeftLightHigh, LeftLightHigh);
         InitHash(ref _LeftHeavyHigh, LeftHeavyHigh);
@@ -61,7 +67,7 @@ public class CharacterAnimator : MonoBehaviour
         InitHash(ref _RightHeavyLow, RightHeavyLower);
 
         //anim bool
-        Attacking = Animator.StringToHash("Attack");
+        Attack = Animator.StringToHash("Attack");
     }
 
     private void InitHash(ref int hash, string animName)
@@ -73,12 +79,16 @@ public class CharacterAnimator : MonoBehaviour
     }
     private void LateUpdate()
     {
+        if (_fighter.currentState == FightState.ATTACKING)
+        {
+            _animator.SetBool(Attack, true);
+        }
         UpdateIKRig();
     }
 
     private void UpdateIKRig()
     {
-        if (_animator.GetBool(Attacking)) 
+        if (_animator.GetBool(Attack)) 
         {
             RightArmRig.weight = 0;
             LeftArmRig.weight = 0;
@@ -118,7 +128,7 @@ public class CharacterAnimator : MonoBehaviour
     }
 
     public void PlayAttack(float angle, AttackTier tier)
-    {       
+    {
         if (angle > 0 && angle <= 90)
         {
             if (tier == AttackTier.HEAVY)

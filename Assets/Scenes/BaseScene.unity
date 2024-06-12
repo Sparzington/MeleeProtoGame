@@ -4275,6 +4275,7 @@ MonoBehaviour:
   CurrentState: 0
   inputBuffer: 0.6
   fullRecoveryBuffer: 0.6
+  DebugWindow: 0
 --- !u!136 &1640775925
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -4357,7 +4358,7 @@ Transform:
   m_GameObject: {fileID: 1640775922}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 9.94, y: 1, z: 0.047}
+  m_LocalPosition: {x: 9.94, y: 1, z: -0.545}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -4670,6 +4671,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 105558989919302358, guid: 633bf362ceeaacb4785885a115b8b4a8,
         type: 3}
+      propertyPath: DebugWindow
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 105558989919302358, guid: 633bf362ceeaacb4785885a115b8b4a8,
+        type: 3}
       propertyPath: FighterData
       value: 
       objectReference: {fileID: 11400000, guid: 7624bbc1dd1f9614593addb6deb23952,
@@ -4833,6 +4839,11 @@ PrefabInstance:
         type: 3}
       propertyPath: PossibleCombos.Array.data[3].ComboInput.Array.data[2]._ComboLevel
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 115203767768449000, guid: 633bf362ceeaacb4785885a115b8b4a8,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 625393939917057650, guid: 633bf362ceeaacb4785885a115b8b4a8,
         type: 3}
@@ -12612,6 +12623,7 @@ MonoBehaviour:
   CurrentState: 0
   inputBuffer: 0
   fullRecoveryBuffer: 0.6
+  DebugWindow: 0
 --- !u!1 &7452698364190150492
 GameObject:
   m_ObjectHideFlags: 0
