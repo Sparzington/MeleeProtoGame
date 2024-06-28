@@ -62,6 +62,24 @@ public partial class @FightControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""MovementMNK"",
+                    ""type"": ""Value"",
+                    ""id"": ""5bf34bb4-1138-46b9-96f2-dc37dd3dd9a0"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""MovementGP"",
+                    ""type"": ""Value"",
+                    ""id"": ""8a3a5786-7406-4a62-a2e5-e0501a9c82fe"",
+                    ""expectedControlType"": ""Stick"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -130,6 +148,116 @@ public partial class @FightControls: IInputActionCollection2, IDisposable
                     ""action"": ""StanceRotateGP"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""2D Vector"",
+                    ""id"": ""f22bee28-9d83-48a1-a326-c4d46a0a563e"",
+                    ""path"": ""2DVector"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MovementMNK"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""19f719d5-163f-4a39-9394-e9967e22eded"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MovementMNK"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""90ed071f-7e46-457b-87ae-ac98a0286575"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MovementMNK"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""c6a41c95-71c0-44be-907c-612c650ecb21"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MovementMNK"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""5da7c537-49eb-4cb3-b76e-63bf7fa99304"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MovementMNK"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""2D Vector"",
+                    ""id"": ""505ee1e4-d643-4bf7-80d8-4cba38d10ee9"",
+                    ""path"": ""2DVector"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MovementGP"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""b32f14b5-e7fb-4f93-a6e8-b9e3bcef701d"",
+                    ""path"": ""<Gamepad>/leftStick/up"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MovementGP"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""9d29da52-7690-4b68-b6e0-a023335c57c7"",
+                    ""path"": ""<Gamepad>/leftStick/down"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MovementGP"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""07ed5155-2755-4d06-ac39-b62b42d8b638"",
+                    ""path"": ""<Gamepad>/leftStick/left"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MovementGP"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""5a2ee804-7823-4779-b5e7-55f675f3c262"",
+                    ""path"": ""<Gamepad>/leftStick/right"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MovementGP"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         }
@@ -142,6 +270,8 @@ public partial class @FightControls: IInputActionCollection2, IDisposable
         m_PlayerStance_HeavyAttack = m_PlayerStance.FindAction("HeavyAttack", throwIfNotFound: true);
         m_PlayerStance_StanceRotateMNK = m_PlayerStance.FindAction("StanceRotateMNK", throwIfNotFound: true);
         m_PlayerStance_StanceRotateGP = m_PlayerStance.FindAction("StanceRotateGP", throwIfNotFound: true);
+        m_PlayerStance_MovementMNK = m_PlayerStance.FindAction("MovementMNK", throwIfNotFound: true);
+        m_PlayerStance_MovementGP = m_PlayerStance.FindAction("MovementGP", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -207,6 +337,8 @@ public partial class @FightControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_PlayerStance_HeavyAttack;
     private readonly InputAction m_PlayerStance_StanceRotateMNK;
     private readonly InputAction m_PlayerStance_StanceRotateGP;
+    private readonly InputAction m_PlayerStance_MovementMNK;
+    private readonly InputAction m_PlayerStance_MovementGP;
     public struct PlayerStanceActions
     {
         private @FightControls m_Wrapper;
@@ -215,6 +347,8 @@ public partial class @FightControls: IInputActionCollection2, IDisposable
         public InputAction @HeavyAttack => m_Wrapper.m_PlayerStance_HeavyAttack;
         public InputAction @StanceRotateMNK => m_Wrapper.m_PlayerStance_StanceRotateMNK;
         public InputAction @StanceRotateGP => m_Wrapper.m_PlayerStance_StanceRotateGP;
+        public InputAction @MovementMNK => m_Wrapper.m_PlayerStance_MovementMNK;
+        public InputAction @MovementGP => m_Wrapper.m_PlayerStance_MovementGP;
         public InputActionMap Get() { return m_Wrapper.m_PlayerStance; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -236,6 +370,12 @@ public partial class @FightControls: IInputActionCollection2, IDisposable
             @StanceRotateGP.started += instance.OnStanceRotateGP;
             @StanceRotateGP.performed += instance.OnStanceRotateGP;
             @StanceRotateGP.canceled += instance.OnStanceRotateGP;
+            @MovementMNK.started += instance.OnMovementMNK;
+            @MovementMNK.performed += instance.OnMovementMNK;
+            @MovementMNK.canceled += instance.OnMovementMNK;
+            @MovementGP.started += instance.OnMovementGP;
+            @MovementGP.performed += instance.OnMovementGP;
+            @MovementGP.canceled += instance.OnMovementGP;
         }
 
         private void UnregisterCallbacks(IPlayerStanceActions instance)
@@ -252,6 +392,12 @@ public partial class @FightControls: IInputActionCollection2, IDisposable
             @StanceRotateGP.started -= instance.OnStanceRotateGP;
             @StanceRotateGP.performed -= instance.OnStanceRotateGP;
             @StanceRotateGP.canceled -= instance.OnStanceRotateGP;
+            @MovementMNK.started -= instance.OnMovementMNK;
+            @MovementMNK.performed -= instance.OnMovementMNK;
+            @MovementMNK.canceled -= instance.OnMovementMNK;
+            @MovementGP.started -= instance.OnMovementGP;
+            @MovementGP.performed -= instance.OnMovementGP;
+            @MovementGP.canceled -= instance.OnMovementGP;
         }
 
         public void RemoveCallbacks(IPlayerStanceActions instance)
@@ -275,5 +421,7 @@ public partial class @FightControls: IInputActionCollection2, IDisposable
         void OnHeavyAttack(InputAction.CallbackContext context);
         void OnStanceRotateMNK(InputAction.CallbackContext context);
         void OnStanceRotateGP(InputAction.CallbackContext context);
+        void OnMovementMNK(InputAction.CallbackContext context);
+        void OnMovementGP(InputAction.CallbackContext context);
     }
 }

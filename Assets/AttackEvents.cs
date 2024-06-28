@@ -9,6 +9,7 @@ public class AttackEvents : StateMachineBehaviour
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
+        animator.applyRootMotion = true;
         animator.SetBool(Attacking, true);
     }
 
@@ -21,8 +22,8 @@ public class AttackEvents : StateMachineBehaviour
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
+        animator.applyRootMotion = false;
         animator.SetBool(Attacking, false);
-
     }
 
     // OnStateMove is called right after Animator.OnAnimatorMove()

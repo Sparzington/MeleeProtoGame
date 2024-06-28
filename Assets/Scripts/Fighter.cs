@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum FightState { IDLE, ATTACKING, COMBORECOVER, FULLRECOVER }
+public enum FightState { IDLE, WINDUP, ATTACKING, COMBORECOVER, FULLRECOVER }
 
 public class Fighter : MonoBehaviour, IDamageable, IFighter
 {
@@ -153,6 +153,11 @@ public class Fighter : MonoBehaviour, IDamageable, IFighter
                 CanAttack = true;
 
                 break;
+            case FightState.WINDUP:
+                    //Nothing right now
+
+                break;
+            
             case FightState.ATTACKING:
                 CanAttack = false;
                 currentBuffer = 0.0f;
@@ -306,23 +311,25 @@ public class Fighter : MonoBehaviour, IDamageable, IFighter
     //States
     public void WindUp() 
     {
-        Debug.Log("Windup");
+        //Debug.Log("Windup");
 
         currentBuffer = 0.0f;
         CanAttack = false;
+        CurrentState = FightState.WINDUP;
+
         AttackSlider.instance.SetTimer(0);
 
     }
     public void FollowThrough()
     {
-        Debug.Log("Attack");
+        //Debug.Log("Attack");
         CurrentState = FightState.ATTACKING;
         _heldWeapon.ToggleCollider(true);
 
     }
     public void Recover()
     {
-        Debug.Log("Recover");
+        //Debug.Log("Recover");
 
         CurrentState = FightState.COMBORECOVER;
         _heldWeapon.ToggleCollider(false);
