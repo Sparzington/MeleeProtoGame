@@ -34,6 +34,9 @@ public class CharacterAnimator : MonoBehaviour
     private int _RightHeavyHigh;
     private int _RightLightLow;
     private int _RightHeavyLow;
+    //Movement
+    private int _WalkX;
+    private int _WalkY;
 
     //String Hash names
     [Header("Anim Hash Names")]
@@ -48,7 +51,7 @@ public class CharacterAnimator : MonoBehaviour
 
     private int Attack; //Bool
 
-    private  const float animTransitionTime = 0.08f;
+    private const float animTransitionTime = 0.08f;
 
     
     private void Awake()
@@ -66,6 +69,9 @@ public class CharacterAnimator : MonoBehaviour
         InitHash(ref _RightLightLow, RightLightLower);
         InitHash(ref _RightHeavyLow, RightHeavyLower);
 
+        _WalkX = Animator.StringToHash("WalkX");
+        _WalkY = Animator.StringToHash("WalkY");
+
         //anim bool
         Attack = Animator.StringToHash("Attack");
     }
@@ -75,6 +81,22 @@ public class CharacterAnimator : MonoBehaviour
         if (animName != null)
         {
             hash = Animator.StringToHash(animName);
+        }
+    }
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.H))
+        {
+            float g = _animator.GetFloat(_WalkX);
+            _animator.SetFloat(_WalkX, g+0.2f);
+            _animator.SetFloat(_WalkY, g+0.2f);
+        }
+        else if (Input.GetKeyDown(KeyCode.G))
+        {
+            float g = _animator.GetFloat(_WalkX);
+
+            _animator.SetFloat(_WalkX, g - 0.2f);
+            _animator.SetFloat(_WalkY, g - 0.2f);
         }
     }
     private void LateUpdate()
@@ -167,5 +189,25 @@ public class CharacterAnimator : MonoBehaviour
             }
             _animator.CrossFade(_RightLightLow, animTransitionTime);
         }
+    }
+
+    public void SetAnimatorWeight(int index, float weight, float time)
+    {
+        if (Mathf.Approximately(_animator.GetLayerWeight(index), weight))
+        {
+            return;
+        }
+
+        float t = 0;
+        if (weight == 0)
+        {
+            t = Mathf.Lerp(1, 0, time);
+        }
+        else if (weight == 1)
+        {
+            t = Mathf.Lerp(0, 1, time);
+        }
+
+        _animator.SetLayerWeight(index, t);
     }
 }

@@ -38,7 +38,16 @@ public class PlayerController : MonoBehaviour
 
     //Movment - Walking
     public Vector3 MovementVector;
+    public Vector3 PrevMovementVector;
     public float MovementAccel = 5;
+    [SerializeField] private float MaxSpeed = 5;
+    [SerializeField] private bool GettingMoveInput;
+
+    //Bool for if locking on to target
+    public bool Engaged
+    {
+        get; private set;
+    }
 
     private void Awake()
     {
@@ -71,6 +80,7 @@ public class PlayerController : MonoBehaviour
         MovementVector = value.Get<Vector2>();
         MovementVector.z = MovementVector.y;
         MovementVector.y = 0;
+        GettingMoveInput = true;
     }
     private void OnMovementGP(InputValue value)
     {
@@ -78,10 +88,23 @@ public class PlayerController : MonoBehaviour
         MovementVector = value.Get<Vector2>();
         MovementVector.z = MovementVector.y;
         MovementVector.y = 0;
+        GettingMoveInput = true;
     }
 
 
     //Inputs - Stance Aiming
+    private void OnStanceLock()
+    {
+        Debug.Log("Doing Stance");
+        if (!Engaged)
+        {
+            Engaged = true;
+        }
+        else
+        {
+            Engaged = false;
+        }    
+    }
     private void OnStanceRotateGP(InputValue value)
     {
         Vector2 f = value.Get<Vector2>();
@@ -161,14 +184,7 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (Input.GetKey(KeyCode.W))
-        {
-            _rigidBody.AddForce(transform.forward * MovementAccel, ForceMode.Acceleration);
-        }
-        else if (Input.GetKey(KeyCode.S))
-        {
-            _rigidBody.AddForce(-transform.forward * MovementAccel, ForceMode.Acceleration);
-        }
+        HandleMovement();
     }
     private void Update()
     {
@@ -176,10 +192,15 @@ public class PlayerController : MonoBehaviour
         {
             case FightState.IDLE:
                 _characterAnimator.SetStanceAnim(_stanceComponent.Angle);
-
-                
+                _characterAnimator.SetAnimatorWeight(1, 1, 1);
 
                 break;
+
+            case FightState.WINDUP:
+                _characterAnimator.SetAnimatorWeight(1, 0, 1);
+
+                break;
+
             case FightState.ATTACKING:
 
                 break;
@@ -224,9 +245,28 @@ public class PlayerController : MonoBehaviour
             default:
                 break;
         }
-
     }
+    private void HandleMovement()
+    {
+        if (_fighter.currentState == FightState.IDLE)
+        {
+            if (MovementVector != Vector3.zero)
+            {
+                PrevMovementVector = MovementVector;
 
+                _rigidBody.AddForce(MovementVector * MovementAccel , ForceMode.Force);
+
+                if (_rigidBody.velocity.magnitude > MaxSpeed)
+                {
+                    _rigidBody.velocity = _rigidBody.velocity.normalized * MaxSpeed;
+                }
+            }
+            else
+            {
+                _rigidBody.velocity = Vector3.Lerp(_rigidBody.velocity, Vector3.zero, MovementAccel*Time.fixedDeltaTime);
+            }
+        }
+    }
     private void RigidBodyAttackingMovement(bool isHeavy)
     {
         if (isHeavy)

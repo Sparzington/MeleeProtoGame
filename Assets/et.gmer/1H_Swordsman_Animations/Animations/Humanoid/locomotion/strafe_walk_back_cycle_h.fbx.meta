@@ -546,7 +546,8 @@ ModelImporter:
     - name: root
       parentName: SK_Mannequin
       position: {x: -0, y: 0, z: 0}
-      rotation: {x: 0.00000019470724, y: 0.00000019470717, z: -0.000000043711406, w: 1}
+      rotation: {x: 0.00000019470724, y: 0.00000019470717, z: -0.000000043711406,
+        w: 1}
       scale: {x: 1, y: 1, z: 1}
     - name: pelvis
       parentName: root
@@ -856,7 +857,8 @@ ModelImporter:
     - name: ik_foot_root
       parentName: root
       position: {x: -0, y: 0, z: 0}
-      rotation: {x: 0.00000019470724, y: 0.00000019470717, z: -0.000000043711406, w: 1}
+      rotation: {x: 0.00000019470724, y: 0.00000019470717, z: -0.000000043711406,
+        w: 1}
       scale: {x: 1, y: 1, z: 1}
     - name: ik_foot_l
       parentName: ik_foot_root
@@ -871,7 +873,8 @@ ModelImporter:
     - name: ik_hand_root
       parentName: root
       position: {x: -0, y: 0, z: 0}
-      rotation: {x: 0.00000019470724, y: 0.00000019470717, z: -0.000000043711406, w: 1}
+      rotation: {x: 0.00000019470724, y: 0.00000019470717, z: -0.000000043711406,
+        w: 1}
       scale: {x: 1, y: 1, z: 1}
     - name: ik_hand_gun
       parentName: ik_hand_root
@@ -900,7 +903,8 @@ ModelImporter:
     hasTranslationDoF: 0
     hasExtraRoot: 1
     skeletonHasParents: 1
-  lastHumanDescriptionAvatarSource: {fileID: 9000000, guid: 0d29c6183fa74e14c838182037ad2cd9, type: 2}
+  lastHumanDescriptionAvatarSource: {fileID: 9000000, guid: 0d29c6183fa74e14c838182037ad2cd9,
+    type: 2}
   autoGenerateAvatarMappingIfUnspecified: 1
   animationType: 3
   humanoidOversampling: 1

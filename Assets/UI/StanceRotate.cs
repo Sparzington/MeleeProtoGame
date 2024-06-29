@@ -23,9 +23,6 @@ public class StanceRotate : MonoBehaviour
     [Range(0f, 1f)]
     [SerializeField] private float DeadZone = 0.05f;
     private float StanceDeadZone;
-
-    public bool DisableUI;
-    public bool CodedMouse = false;
     
     private void Start()
     {
@@ -37,15 +34,6 @@ public class StanceRotate : MonoBehaviour
 
         StanceDeadZone = Screen.width * DeadZone;
         ScreenCenter = new Vector2(Screen.width/2, Screen.height/2);
-
-        if (DisableUI)
-        {
-            Image[] i = transform.GetComponentsInChildren<Image>();
-            foreach (var item in i)
-            {
-                item.enabled = false;
-            }
-        }
     }
     public bool IsOnRightSide()
     {
@@ -56,5 +44,14 @@ public class StanceRotate : MonoBehaviour
     {
         GuardRotation.z = angle-90;
         arrowObj.transform.localEulerAngles = GuardRotation;
+    }
+
+    public void ToggleStanceUI(bool toggle)
+    {
+        Image[] i = transform.GetComponentsInChildren<Image>();
+        foreach (var item in i)
+        {
+            item.enabled = toggle;
+        }
     }
 }
