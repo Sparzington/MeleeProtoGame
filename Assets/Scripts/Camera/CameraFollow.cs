@@ -1,18 +1,21 @@
+using Cinemachine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class CameraFollow : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    private CinemachineVirtualCamera _camera;
+
+    private void Awake()
     {
-        
+        _camera = GetComponent<CinemachineVirtualCamera>();
+
+        PlayerController.OnEngage += PlayerController_OnEngage;
     }
 
-    // Update is called once per frame
-    void Update()
+    private void PlayerController_OnEngage(object sender, Transform e)
     {
-        
+        _camera.LookAt = e;
     }
 }

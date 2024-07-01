@@ -4552,12 +4552,12 @@ GameObject:
   - component: {fileID: 5171962396877685035}
   - component: {fileID: 625393939917057650}
   - component: {fileID: 7117465947121127227}
-  - component: {fileID: 105558989919302358}
   - component: {fileID: 4688359026482987103}
+  - component: {fileID: 4256349399544497579}
   - component: {fileID: 115203767768449000}
   - component: {fileID: 2657162709382864540}
   - component: {fileID: 7276086210078354622}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4660,16 +4660,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 803d6db21fab93d4fabe284d46498dbc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  LeftArmRig: {fileID: 0}
-  RightArmRig: {fileID: 0}
-  LeftLightHigh: 
-  LeftHeavyHigh: 
-  LeftLightLower: 
-  LeftHeavyLower: 
-  RightLightHigh: 
-  RightHeavHigh: 
-  RightLightLower: 
-  RightHeavyLower: 
+  LeftArmRig: {fileID: 126804446410100134}
+  RightArmRig: {fileID: 5772143032363578718}
+  HeadRig: {fileID: 93243666079389007}
+  LeftLightHigh: NewLeftLightHigh
+  LeftHeavyHigh: NewHeavyLeftHigh
+  LeftLightLower: LeftLight
+  LeftHeavyLower: LeftUpswing
+  RightLightHigh: NewRightLightHigh
+  RightHeavHigh: NewHeavyRightHigh
+  RightLightLower: RightLight
+  RightHeavyLower: RightUpswing
 --- !u!114 &7117465947121127227
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4682,35 +4683,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c08babad04c15f44aa2193680fdbd9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DeadZone: 0.05
+  DeadZone: 0.04
   Angle: 0
-  WindupMoveForce: 0
-  LightMoveForce: 0
-  HeavyMoveForce: 0
+  WindupMoveForce: 50
+  LightMoveForce: 100
+  HeavyMoveForce: 200
   MovementVector: {x: 0, y: 0, z: 0}
-  MovementAccel: 5
---- !u!114 &105558989919302358
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5071227408047777351}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5b81d287eafa84946bc4241a405c0cf6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  FighterData: {fileID: 0}
-  PossibleCombos: []
-  CurrentComboIndex: 0
-  Health: 0
-  Invincible: 0
-  CanAttack: 0
-  CurrentState: 0
-  inputBuffer: 0.6
-  fullRecoveryBuffer: 0.6
-  DebugWindow: 0
+  PrevMovementVector: {x: 0, y: 0, z: 0}
+  MovementAccel: 150
+  MaxSpeed: 3
+  GettingMoveInput: 0
+  TargetingMask:
+    serializedVersion: 2
+    m_Bits: 128
 --- !u!114 &4688359026482987103
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4731,6 +4716,52 @@ MonoBehaviour:
   - m_Rig: {fileID: 126804446410100134}
     m_Active: 1
   m_Effectors: []
+--- !u!114 &4256349399544497579
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5071227408047777351}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b81d287eafa84946bc4241a405c0cf6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  FighterData: {fileID: 11400000, guid: 7624bbc1dd1f9614593addb6deb23952, type: 2}
+  PossibleCombos:
+  - ComboInput:
+    - Tier: 0
+      Level: 0
+    - Tier: 0
+      Level: 0
+    - Tier: 1
+      Level: 1
+  - ComboInput:
+    - Tier: 0
+      Level: 0
+    - Tier: 1
+      Level: 1
+  - ComboInput:
+    - Tier: 1
+      Level: 0
+    - Tier: 1
+      Level: 0
+    - Tier: 0
+      Level: 1
+  - ComboInput:
+    - Tier: 1
+      Level: 0
+    - Tier: 0
+      Level: 1
+  CurrentComboIndex: 1
+  Health: 0
+  Invincible: 0
+  CanAttack: 0
+  CurrentState: 0
+  inputBuffer: 0.6
+  fullRecoveryBuffer: 0.4
+  DebugWindow: 1
 --- !u!114 &115203767768449000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4851,7 +4882,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5071227408047777351}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 435728b166ba2dc4d8116b4ba319da6c, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -4875,7 +4906,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5071227408047777351}
   serializedVersion: 4
-  m_Mass: 1
+  m_Mass: 10
   m_Drag: 0
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -4891,8 +4922,8 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 80
+  m_Interpolate: 1
+  m_Constraints: 112
   m_CollisionDetection: 0
 --- !u!1 &5092924056720305610
 GameObject:

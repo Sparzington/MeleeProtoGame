@@ -16,6 +16,7 @@ public class CharacterAnimator : MonoBehaviour
     [Header("IK Rigs")]
     [SerializeField] private Rig LeftArmRig;
     [SerializeField] private Rig RightArmRig;
+    [SerializeField] private Rig HeadRig;
     private float rigResetTimer;
     private float rigResetSpeed = 5f;
 
@@ -75,28 +76,27 @@ public class CharacterAnimator : MonoBehaviour
         //anim bool
         Attack = Animator.StringToHash("Attack");
     }
+    public void SetIKWeight(float weight)
+    {
+        if (weight < 0)
+        {
+            weight = 0;
+        }
+        else if (weight > 1.0f) 
+        {
+            weight = 1.0f; 
+        }
+
+        HeadRig.weight = weight;
+        LeftArmRig.weight = weight;
+        RightArmRig.weight = weight;
+    }
 
     private void InitHash(ref int hash, string animName)
     {
         if (animName != null)
         {
             hash = Animator.StringToHash(animName);
-        }
-    }
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.H))
-        {
-            float g = _animator.GetFloat(_WalkX);
-            _animator.SetFloat(_WalkX, g+0.2f);
-            _animator.SetFloat(_WalkY, g+0.2f);
-        }
-        else if (Input.GetKeyDown(KeyCode.G))
-        {
-            float g = _animator.GetFloat(_WalkX);
-
-            _animator.SetFloat(_WalkX, g - 0.2f);
-            _animator.SetFloat(_WalkY, g - 0.2f);
         }
     }
     private void LateUpdate()
@@ -118,7 +118,7 @@ public class CharacterAnimator : MonoBehaviour
         }
         else
         {
-            if (RightArmRig.weight  != 1)
+            if (RightArmRig.weight != 1)
             {
                 rigResetTimer += Time.deltaTime * rigResetSpeed;
                 RightArmRig.weight = Mathf.MoveTowards(0, 1, rigResetTimer);

@@ -5,7 +5,7 @@ using UnityEngine;
 
 public enum FightState { IDLE, WINDUP, ATTACKING, COMBORECOVER, FULLRECOVER }
 
-public class Fighter : MonoBehaviour, IDamageable, IFighter
+public class Fighter : MonoBehaviour, IDamageable, IFighter, ITargetable
 {
 
     [SerializeField] private FighterSO FighterData;

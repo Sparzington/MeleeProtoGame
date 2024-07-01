@@ -39,9 +39,9 @@ public class PlayerController : MonoBehaviour
     //Movment - Walking
     public Vector3 MovementVector;
     public Vector3 PrevMovementVector;
+    private Vector3 FinalMoveVector;
     public float MovementAccel = 5;
     [SerializeField] private float MaxSpeed = 5;
-    [SerializeField] private bool GettingMoveInput;
 
     //Bool for if locking on to target
     public bool Engaged
@@ -49,8 +49,21 @@ public class PlayerController : MonoBehaviour
         get; private set;
     }
 
+    //Targeting 
+    private Collider MyCollider; //For target checking
+    private Vector3 TargetDirection;
+    private Transform TargetTransform;
+    private const float ScanRadius = 10;
+    private Collider[] PotentialTargets;
+    [SerializeField] private LayerMask TargetingMask;
+
+    public static event EventHandler<Transform> OnEngage;
+
     private void Awake()
     {
+        PotentialTargets = new Collider[5];
+        MyCollider = GetComponent<Collider>();
+
         //Rigidbody component
         _rigidBody = GetComponent<Rigidbody>();
 
@@ -73,6 +86,11 @@ public class PlayerController : MonoBehaviour
         _attackingStage = AttackingStage.NONE;
     }
 
+    private void Start()
+    {
+        _characterAnimator.SetIKWeight(0);
+    }
+
     //Inputs - Movement
     private void OnMovementMNK(InputValue value)
     {
@@ -80,7 +98,6 @@ public class PlayerController : MonoBehaviour
         MovementVector = value.Get<Vector2>();
         MovementVector.z = MovementVector.y;
         MovementVector.y = 0;
-        GettingMoveInput = true;
     }
     private void OnMovementGP(InputValue value)
     {
@@ -88,7 +105,6 @@ public class PlayerController : MonoBehaviour
         MovementVector = value.Get<Vector2>();
         MovementVector.z = MovementVector.y;
         MovementVector.y = 0;
-        GettingMoveInput = true;
     }
 
 
@@ -98,12 +114,28 @@ public class PlayerController : MonoBehaviour
         Debug.Log("Doing Stance");
         if (!Engaged)
         {
-            Engaged = true;
+            TargetTransform = ScanForTarget();
+
+            if (TargetTransform != transform)
+            {
+                Engaged = true;
+                OnEngage?.Invoke(this, TargetTransform);
+                TargetingDot._instance.SetTarget(TargetTransform);
+
+                _characterAnimator.SetIKWeight(1);
+            }
+            else
+            {
+                _characterAnimator.SetIKWeight(0);
+            }
         }
         else
         {
             Engaged = false;
-        }    
+            TargetingDot._instance.DisableTarget();
+
+            _characterAnimator.SetIKWeight(0);
+        }
     }
     private void OnStanceRotateGP(InputValue value)
     {
@@ -182,12 +214,38 @@ public class PlayerController : MonoBehaviour
     }
     #endregion
 
+    private Transform ScanForTarget()
+    {
+        Transform newTarget = transform;
+
+        int n = Physics.OverlapSphereNonAlloc(transform.position, ScanRadius, PotentialTargets, TargetingMask);
+        if (n-1 > 0)
+        {
+            for (int i = 0; i < n; i++)
+            {
+                if (PotentialTargets[i] != MyCollider)
+                {
+                    newTarget = PotentialTargets[i].gameObject.transform;
+                    break;
+                }
+            }                
+        }
+
+        return newTarget;
+    }
     private void FixedUpdate()
     {
         HandleMovement();
     }
     private void Update()
     {
+        if (Engaged)
+        {
+            TargetDirection = (TargetTransform.position - transform.position).normalized;
+            TargetDirection.y = 0;
+            transform.forward = TargetDirection;
+        }
+
         switch (_fighter.currentState)
         {
             case FightState.IDLE:
@@ -254,7 +312,10 @@ public class PlayerController : MonoBehaviour
             {
                 PrevMovementVector = MovementVector;
 
-                _rigidBody.AddForce(MovementVector * MovementAccel , ForceMode.Force);
+                FinalMoveVector = (transform.forward * MovementVector.z) + (transform.right * MovementVector.x);
+                FinalMoveVector.Normalize();
+
+                _rigidBody.AddForce(FinalMoveVector * MovementAccel , ForceMode.Force);
 
                 if (_rigidBody.velocity.magnitude > MaxSpeed)
                 {
@@ -278,4 +339,9 @@ public class PlayerController : MonoBehaviour
         _rigidBody.AddForce(transform.forward * LightMoveForce, ForceMode.Force);
     }
 
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(transform.position, ScanRadius);
+    }
 }
