@@ -363,10 +363,11 @@ public class PlayerController : MonoBehaviour
         ///Get direction from camera to player.
         
         Vector3 CameraForward = (transform.position - _FreeLookCamera.transform.position).normalized;
+        CameraForward.y = 0;
         Orientation.forward = CameraForward;
 
         float horiz = MovementVector.x;
-        float vert = MovementVector.y;
+        float vert = MovementVector.z;
 
         Vector3 inputDir = Orientation.forward*vert + Orientation.right*horiz;
         if (inputDir != Vector3.zero)
@@ -374,6 +375,24 @@ public class PlayerController : MonoBehaviour
             transform.forward = Vector3.Slerp(transform.forward, inputDir, Time.deltaTime * 2);
         }
 
+        if (MovementVector != Vector3.zero)
+        {
+            PrevMovementVector = MovementVector;
+
+            FinalMoveVector = (Orientation.transform.forward * MovementVector.z) + (Orientation.transform.right * MovementVector.x);
+            FinalMoveVector.Normalize();
+
+            _rigidBody.AddForce(FinalMoveVector * MovementAccel, ForceMode.Force);
+
+            if (_rigidBody.velocity.magnitude > MaxSpeed)
+            {
+                _rigidBody.velocity = _rigidBody.velocity.normalized * MaxSpeed;
+            }
+        }
+        else
+        {
+            _rigidBody.velocity = Vector3.Lerp(_rigidBody.velocity, Vector3.zero, MovementAccel * Time.fixedDeltaTime);
+        }
     }
     private void RigidBodyAttackingMovement(bool isHeavy)
     {
