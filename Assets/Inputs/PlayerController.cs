@@ -1,3 +1,4 @@
+using Cinemachine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -19,9 +20,17 @@ public class PlayerController : MonoBehaviour
     //Stance Widget
     private StanceRotate _stanceComponent;
 
+    //Rigidbody componenet
     private Rigidbody _rigidBody;
     private AttackingStage _attackingStage;
 
+    //Facing Camera
+    [SerializeField] private CinemachineFreeLook _FreeLookCamera;
+    
+    //Mesh Object
+    [SerializeField] private Transform PlayerBody;
+    [SerializeField] private Transform Orientation;
+    
     //Stance Aiming
     [Range(0f, 1f)]
     [SerializeField] private float DeadZone = 0.05f;
@@ -58,9 +67,18 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private LayerMask TargetingMask;
 
     public static event EventHandler<Transform> OnEngage;
+    public static event EventHandler OnDisengage;
 
     private void Awake()
     {
+        //Camera
+        _FreeLookCamera = GameObject.Find("Freelook Camera").GetComponent<CinemachineFreeLook>();
+        if (_FreeLookCamera == null)
+        {
+            Debug.LogWarning("! No Player camera refernced !");
+        }
+
+        //Stance targeting
         PotentialTargets = new Collider[5];
         MyCollider = GetComponent<Collider>();
 
@@ -121,6 +139,7 @@ public class PlayerController : MonoBehaviour
                 Engaged = true;
                 OnEngage?.Invoke(this, TargetTransform);
                 TargetingDot._instance.SetTarget(TargetTransform);
+                _stanceComponent.ToggleStanceUI(true);
 
                 _characterAnimator.SetIKWeight(1);
             }
@@ -132,7 +151,10 @@ public class PlayerController : MonoBehaviour
         else
         {
             Engaged = false;
+            OnDisengage?.Invoke(this, EventArgs.Empty);
             TargetingDot._instance.DisableTarget();
+
+            _stanceComponent.ToggleStanceUI(false);
 
             _characterAnimator.SetIKWeight(0);
         }
@@ -235,7 +257,14 @@ public class PlayerController : MonoBehaviour
     }
     private void FixedUpdate()
     {
-        HandleMovement();
+        if (Engaged)
+        {
+            CombatMovement();
+        }
+        else
+        {
+            FreeMovement();
+        }
     }
     private void Update()
     {
@@ -304,7 +333,7 @@ public class PlayerController : MonoBehaviour
                 break;
         }
     }
-    private void HandleMovement()
+    private void CombatMovement()
     {
         if (_fighter.currentState == FightState.IDLE)
         {
@@ -327,6 +356,24 @@ public class PlayerController : MonoBehaviour
                 _rigidBody.velocity = Vector3.Lerp(_rigidBody.velocity, Vector3.zero, MovementAccel*Time.fixedDeltaTime);
             }
         }
+    }
+
+    private void FreeMovement()
+    {
+        ///Get direction from camera to player.
+        
+        Vector3 CameraForward = (transform.position - _FreeLookCamera.transform.position).normalized;
+        Orientation.forward = CameraForward;
+
+        float horiz = MovementVector.x;
+        float vert = MovementVector.y;
+
+        Vector3 inputDir = Orientation.forward*vert + Orientation.right*horiz;
+        if (inputDir != Vector3.zero)
+        {
+            transform.forward = Vector3.Slerp(transform.forward, inputDir, Time.deltaTime * 2);
+        }
+
     }
     private void RigidBodyAttackingMovement(bool isHeavy)
     {
