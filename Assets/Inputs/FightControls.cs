@@ -89,6 +89,15 @@ public partial class @FightControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Run"",
+                    ""type"": ""Button"",
+                    ""id"": ""3d95067c-fefe-4f31-a9c7-7c90505a0b3d"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -289,6 +298,28 @@ public partial class @FightControls: IInputActionCollection2, IDisposable
                     ""action"": ""StanceLock"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5a231fdc-5136-4f0a-836a-6f862882b875"",
+                    ""path"": ""<Keyboard>/leftShift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Run"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6cd587c3-6e34-4c4f-877a-78114664b9bd"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Run"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -304,6 +335,7 @@ public partial class @FightControls: IInputActionCollection2, IDisposable
         m_PlayerStance_MovementMNK = m_PlayerStance.FindAction("MovementMNK", throwIfNotFound: true);
         m_PlayerStance_MovementGP = m_PlayerStance.FindAction("MovementGP", throwIfNotFound: true);
         m_PlayerStance_StanceLock = m_PlayerStance.FindAction("StanceLock", throwIfNotFound: true);
+        m_PlayerStance_Run = m_PlayerStance.FindAction("Run", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -372,6 +404,7 @@ public partial class @FightControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_PlayerStance_MovementMNK;
     private readonly InputAction m_PlayerStance_MovementGP;
     private readonly InputAction m_PlayerStance_StanceLock;
+    private readonly InputAction m_PlayerStance_Run;
     public struct PlayerStanceActions
     {
         private @FightControls m_Wrapper;
@@ -383,6 +416,7 @@ public partial class @FightControls: IInputActionCollection2, IDisposable
         public InputAction @MovementMNK => m_Wrapper.m_PlayerStance_MovementMNK;
         public InputAction @MovementGP => m_Wrapper.m_PlayerStance_MovementGP;
         public InputAction @StanceLock => m_Wrapper.m_PlayerStance_StanceLock;
+        public InputAction @Run => m_Wrapper.m_PlayerStance_Run;
         public InputActionMap Get() { return m_Wrapper.m_PlayerStance; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -413,6 +447,9 @@ public partial class @FightControls: IInputActionCollection2, IDisposable
             @StanceLock.started += instance.OnStanceLock;
             @StanceLock.performed += instance.OnStanceLock;
             @StanceLock.canceled += instance.OnStanceLock;
+            @Run.started += instance.OnRun;
+            @Run.performed += instance.OnRun;
+            @Run.canceled += instance.OnRun;
         }
 
         private void UnregisterCallbacks(IPlayerStanceActions instance)
@@ -438,6 +475,9 @@ public partial class @FightControls: IInputActionCollection2, IDisposable
             @StanceLock.started -= instance.OnStanceLock;
             @StanceLock.performed -= instance.OnStanceLock;
             @StanceLock.canceled -= instance.OnStanceLock;
+            @Run.started -= instance.OnRun;
+            @Run.performed -= instance.OnRun;
+            @Run.canceled -= instance.OnRun;
         }
 
         public void RemoveCallbacks(IPlayerStanceActions instance)
@@ -464,5 +504,6 @@ public partial class @FightControls: IInputActionCollection2, IDisposable
         void OnMovementMNK(InputAction.CallbackContext context);
         void OnMovementGP(InputAction.CallbackContext context);
         void OnStanceLock(InputAction.CallbackContext context);
+        void OnRun(InputAction.CallbackContext context);
     }
 }

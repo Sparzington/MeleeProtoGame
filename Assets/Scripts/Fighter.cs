@@ -52,7 +52,13 @@ public class Fighter : MonoBehaviour, IDamageable, IFighter, ITargetable
     public bool DebugWindow;
     private void Start()
     {
-        _heldWeapon.OnWeaponStrike += OnEnemyHit;
+        if (_heldWeapon != null)
+            _heldWeapon.OnWeaponStrike += OnEnemyHit;
+    }
+    private void OnDestroy()
+    {
+        if (_heldWeapon != null)
+            _heldWeapon.OnWeaponStrike -= OnEnemyHit;
     }
 
     private void OnEnemyHit(object sender, Fighter e)

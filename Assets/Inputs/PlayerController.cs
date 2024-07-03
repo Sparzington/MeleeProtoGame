@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 public enum AttackingStage { NONE, WINDUP, ACTIVE }
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour, IController
 {
     //Our input action Asset
     private FightControls _fightControls;
@@ -50,7 +50,10 @@ public class PlayerController : MonoBehaviour
     public Vector3 PrevMovementVector;
     private Vector3 FinalMoveVector;
     public float MovementAccel = 5;
-    [SerializeField] private float MaxSpeed = 5;
+    [SerializeField] private float WalkMax = 3;
+    [SerializeField] private float RunMax = 5;
+    public bool Run;
+    private InputValue RunButton;
 
     //Bool for if locking on to target
     public bool Engaged
@@ -90,13 +93,13 @@ public class PlayerController : MonoBehaviour
 
         //Fighter
         _fighter = GetComponent<Fighter>();
-        _fighter.FighterInit();
 
         //Stance Widget
         _stanceComponent = GetComponentInChildren<StanceRotate>();
 
         //Animator Manager
         _characterAnimator = GetComponent<CharacterAnimator>();
+
 
         StanceDeadZone = Screen.width * DeadZone;
         ScreenCenter = new Vector2(Screen.width / 2, Screen.height / 2);
@@ -106,6 +109,7 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
+        _fighter.FighterInit();
         _characterAnimator.SetIKWeight(0);
     }
 
@@ -125,6 +129,13 @@ public class PlayerController : MonoBehaviour
         MovementVector.y = 0;
     }
 
+    private void OnRun(InputValue value)
+    {
+        if (_fighter.currentState == FightState.IDLE)
+        {
+            Run = !Run;
+        }
+    }
 
     //Inputs - Stance Aiming
     private void OnStanceLock()
@@ -135,10 +146,12 @@ public class PlayerController : MonoBehaviour
             TargetTransform = ScanForTarget();
 
             if (TargetTransform != transform)
-            {
-                Engaged = true;
+            {                
                 OnEngage?.Invoke(this, TargetTransform);
+                Engage();
+
                 TargetingDot._instance.SetTarget(TargetTransform);
+
                 _stanceComponent.ToggleStanceUI(true);
 
                 _characterAnimator.SetIKWeight(1);
@@ -149,9 +162,10 @@ public class PlayerController : MonoBehaviour
             }
         }
         else
-        {
-            Engaged = false;
+        {           
             OnDisengage?.Invoke(this, EventArgs.Empty);
+            Disengage();
+
             TargetingDot._instance.DisableTarget();
 
             _stanceComponent.ToggleStanceUI(false);
@@ -161,55 +175,66 @@ public class PlayerController : MonoBehaviour
     }
     private void OnStanceRotateGP(InputValue value)
     {
-        Vector2 f = value.Get<Vector2>();
-        Angle = GetAngle(f);
+        if (Engaged)
+        {
+            Vector2 f = value.Get<Vector2>();
+            Angle = GetAngle(f);
 
-        _stanceComponent.UpdateRotation(Angle);
-        _characterAnimator.SetStanceAnim(Angle);
+            _stanceComponent.UpdateRotation(Angle);
+            _characterAnimator.SetStanceAnim(Angle);
+        }        
     }
 
     private void OnStanceRotateMNK(InputValue value)
     {
-
-        MousePos = value.Get<Vector2>();
-        if (MouseOutDeadZone(MousePos))
+        if (Engaged)
         {
-            Debug.Log("Outside");
+            MousePos = value.Get<Vector2>();
+            if (MouseOutDeadZone(MousePos))
+            {
+                Debug.Log("Outside");
 
-            Angle = GetAngle(MousePos - ScreenCenter);
-            MouseReset();
+                Angle = GetAngle(MousePos - ScreenCenter);
+                MouseReset();
 
-            _stanceComponent.UpdateRotation(Angle);
-            _characterAnimator.SetStanceAnim(Angle);
-        }
-        else
-        {
-            Cursor.lockState = CursorLockMode.Confined;
-        }
+                _stanceComponent.UpdateRotation(Angle);
+                _characterAnimator.SetStanceAnim(Angle);
+            }
+            else
+            {
+                Cursor.lockState = CursorLockMode.Confined;
+            }
+        }        
     }
     
     //Attacks 
     private void OnLightAttack()
     {
-        bool onRight = _stanceComponent.IsOnRightSide();
-        _fighter.LightAttack();
-        if (_fighter.CanAttack)
+        if (Engaged)
         {
-            IsHeavyAttack = false;
-            //_rigidBody.AddForce(Vector3.forward*LightMoveForce,ForceMode.VelocityChange);
-            _characterAnimator.PlayAttack(Angle,AttackTier.LIGHT );
-        }
+            bool onRight = _stanceComponent.IsOnRightSide();
+            _fighter.LightAttack();
+            if (_fighter.CanAttack)
+            {
+                IsHeavyAttack = false;
+                //_rigidBody.AddForce(Vector3.forward*LightMoveForce,ForceMode.VelocityChange);
+                _characterAnimator.PlayAttack(Angle, AttackTier.LIGHT);
+            }
+        }        
     }
     private void OnHeavyAttack()
     {
-        bool onRight = _stanceComponent.IsOnRightSide();
-        _fighter.HeavyAttack();
-        if (_fighter.CanAttack)
+        if (Engaged)
         {
-            IsHeavyAttack = true;
-            //_rigidBody.AddForce(Vector3.forward*HeavyMoveForce, ForceMode.VelocityChange);
-            _characterAnimator.PlayAttack(Angle, AttackTier.HEAVY);
-        }
+            bool onRight = _stanceComponent.IsOnRightSide();
+            _fighter.HeavyAttack();
+            if (_fighter.CanAttack)
+            {
+                IsHeavyAttack = true;
+                //_rigidBody.AddForce(Vector3.forward*HeavyMoveForce, ForceMode.VelocityChange);
+                _characterAnimator.PlayAttack(Angle, AttackTier.HEAVY);
+            }
+        }        
     }
 
     //Helpers
@@ -259,11 +284,19 @@ public class PlayerController : MonoBehaviour
     {
         if (Engaged)
         {
-            CombatMovement();
+            CombatMovement(WalkMax * 0.85f);
         }
         else
         {
-            FreeMovement();
+            if (Run)
+            {
+                FreeMovement(RunMax);
+            }
+            else
+            {
+                FreeMovement(WalkMax);
+            }
+
         }
     }
     private void Update()
@@ -273,27 +306,30 @@ public class PlayerController : MonoBehaviour
             TargetDirection = (TargetTransform.position - transform.position).normalized;
             TargetDirection.y = 0;
             transform.forward = TargetDirection;
-        }
 
-        switch (_fighter.currentState)
-        {
-            case FightState.IDLE:
-                _characterAnimator.SetStanceAnim(_stanceComponent.Angle);
-                _characterAnimator.SetAnimatorWeight(1, 1, 1);
 
-                break;
+            //Animator State mmachine
+            switch (_fighter.currentState)
+            {
+                case FightState.IDLE:
+                    _characterAnimator.SetStanceAnim(_stanceComponent.Angle);
+                    _characterAnimator.SetAnimatorWeight(1, 1, 1);
 
-            case FightState.WINDUP:
-                _characterAnimator.SetAnimatorWeight(1, 0, 1);
+                    break;
 
-                break;
+                case FightState.WINDUP:
+                    _characterAnimator.SetAnimatorWeight(1, 0, 1);
 
-            case FightState.ATTACKING:
+                    break;
 
-                break;
-            default:
-                break;
-        }
+                case FightState.ATTACKING:
+
+                    break;
+                default:
+                    break;
+            }
+        }       
+        
 
         ///IF character is being animated from an attack input
         /// move character by [LIGHT,HEAVY] move values over time for SMOOTH movement
@@ -333,7 +369,7 @@ public class PlayerController : MonoBehaviour
                 break;
         }
     }
-    private void CombatMovement()
+    private void CombatMovement(float maxspeed)
     {
         if (_fighter.currentState == FightState.IDLE)
         {
@@ -346,9 +382,9 @@ public class PlayerController : MonoBehaviour
 
                 _rigidBody.AddForce(FinalMoveVector * MovementAccel , ForceMode.Force);
 
-                if (_rigidBody.velocity.magnitude > MaxSpeed)
+                if (_rigidBody.velocity.magnitude > maxspeed)
                 {
-                    _rigidBody.velocity = _rigidBody.velocity.normalized * MaxSpeed;
+                    _rigidBody.velocity = _rigidBody.velocity.normalized * maxspeed;
                 }
             }
             else
@@ -358,7 +394,8 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void FreeMovement()
+    //Help from https://www.youtube.com/watch?v=UCwwn2q4Vys&t=332s
+    private void FreeMovement(float maxspeed)
     {
         ///Get direction from camera to player.
         
@@ -384,14 +421,27 @@ public class PlayerController : MonoBehaviour
 
             _rigidBody.AddForce(FinalMoveVector * MovementAccel, ForceMode.Force);
 
-            if (_rigidBody.velocity.magnitude > MaxSpeed)
+            if (_rigidBody.velocity.magnitude > maxspeed)
             {
-                _rigidBody.velocity = _rigidBody.velocity.normalized * MaxSpeed;
+                _rigidBody.velocity = _rigidBody.velocity.normalized * maxspeed;
             }
         }
         else
         {
             _rigidBody.velocity = Vector3.Lerp(_rigidBody.velocity, Vector3.zero, MovementAccel * Time.fixedDeltaTime);
+        }
+
+        if (_rigidBody.velocity.magnitude < 1)
+        {
+            _characterAnimator.SetWalkValues(0);
+        }
+        else if (_rigidBody.velocity.magnitude > 0 && !Run)
+        {
+            _characterAnimator.SetWalkValues(0.8f);
+        }
+        else if (_rigidBody.velocity.magnitude > 0 && Run)
+        {
+            _characterAnimator.SetWalkValues(1.0f);
         }
     }
     private void RigidBodyAttackingMovement(bool isHeavy)
@@ -409,5 +459,15 @@ public class PlayerController : MonoBehaviour
     {
         Gizmos.color = Color.green;
         Gizmos.DrawWireSphere(transform.position, ScanRadius);
+    }
+
+    public void Engage()
+    {
+        Engaged = true;
+    }
+
+    public void Disengage()
+    {
+        Engaged = false;
     }
 }

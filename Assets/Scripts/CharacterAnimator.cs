@@ -38,6 +38,9 @@ public class CharacterAnimator : MonoBehaviour
     //Movement
     private int _WalkX;
     private int _WalkY;
+    private int FreeWalk;
+
+    private bool Engaged;
 
     //String Hash names
     [Header("Anim Hash Names")]
@@ -72,15 +75,17 @@ public class CharacterAnimator : MonoBehaviour
 
         _WalkX = Animator.StringToHash("WalkX");
         _WalkY = Animator.StringToHash("WalkY");
+        FreeWalk = Animator.StringToHash("FreeWalk");
 
         //anim bool
         Attack = Animator.StringToHash("Attack");
     }
     public void SetIKWeight(float weight)
     {
-        if (weight < 0)
+        if (weight <= 0)
         {
             weight = 0;
+            _animator.SetInteger("Aim", -1);
         }
         else if (weight > 1.0f) 
         {
@@ -105,6 +110,7 @@ public class CharacterAnimator : MonoBehaviour
         {
             _animator.SetBool(Attack, true);
         }
+        
         UpdateIKRig();
     }
 
@@ -125,6 +131,10 @@ public class CharacterAnimator : MonoBehaviour
                 LeftArmRig.weight = Mathf.MoveTowards(0, 1, rigResetTimer);
             }            
         }
+    }    
+    public void SetWalkValues(float walkValue)
+    {
+        _animator.SetFloat(FreeWalk, walkValue);
     }
     public void SetStanceAnim(float angle)
     {
@@ -209,5 +219,10 @@ public class CharacterAnimator : MonoBehaviour
         }
 
         _animator.SetLayerWeight(index, t);
+    }
+
+    public void SetWalkSate(bool freewalking)
+    {
+        Engaged = freewalking;
     }
 }
