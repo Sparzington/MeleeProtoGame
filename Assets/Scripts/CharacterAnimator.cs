@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
+//using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Animations.Rigging;
 
@@ -35,12 +35,13 @@ public class CharacterAnimator : MonoBehaviour
     private int _RightHeavyHigh;
     private int _RightLightLow;
     private int _RightHeavyLow;
-    //Movement
+        //Movement
     private int _WalkX;
     private int _WalkY;
-    private int FreeWalk;
+    private int _FreeWalk;
+    private int _Engaged;
 
-    private bool Engaged;
+    public bool Engaged { get; set; }
 
     //String Hash names
     [Header("Anim Hash Names")]
@@ -75,7 +76,8 @@ public class CharacterAnimator : MonoBehaviour
 
         _WalkX = Animator.StringToHash("WalkX");
         _WalkY = Animator.StringToHash("WalkY");
-        FreeWalk = Animator.StringToHash("FreeWalk");
+        _FreeWalk = Animator.StringToHash("FreeWalk");
+        _Engaged = Animator.StringToHash("Engaged");
 
         //anim bool
         Attack = Animator.StringToHash("Attack");
@@ -106,15 +108,20 @@ public class CharacterAnimator : MonoBehaviour
     }
     private void LateUpdate()
     {
+        _animator.SetBool(_Engaged, Engaged);
+
         if (_fighter.currentState == FightState.ATTACKING)
         {
             _animator.SetBool(Attack, true);
         }
-        
-        UpdateIKRig();
+
+        if (Engaged)
+        {
+            UpdateCombatRig();
+        }
     }
 
-    private void UpdateIKRig()
+    private void UpdateCombatRig()
     {
         if (_animator.GetBool(Attack)) 
         {
@@ -134,7 +141,7 @@ public class CharacterAnimator : MonoBehaviour
     }    
     public void SetWalkValues(float walkValue)
     {
-        _animator.SetFloat(FreeWalk, walkValue);
+        _animator.SetFloat(_FreeWalk, walkValue);
     }
     public void SetStanceAnim(float angle)
     {

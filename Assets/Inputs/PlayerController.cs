@@ -52,6 +52,7 @@ public class PlayerController : MonoBehaviour, IController
     public float MovementAccel = 5;
     [SerializeField] private float WalkMax = 3;
     [SerializeField] private float RunMax = 5;
+    private float CurrentWalkValue = 0;
     public bool Run;
     private InputValue RunButton;
 
@@ -110,7 +111,7 @@ public class PlayerController : MonoBehaviour, IController
     private void Start()
     {
         _fighter.FighterInit();
-        _characterAnimator.SetIKWeight(0);
+        Disengage();
     }
 
     //Inputs - Movement
@@ -153,12 +154,10 @@ public class PlayerController : MonoBehaviour, IController
                 TargetingDot._instance.SetTarget(TargetTransform);
 
                 _stanceComponent.ToggleStanceUI(true);
-
-                _characterAnimator.SetIKWeight(1);
             }
             else
             {
-                _characterAnimator.SetIKWeight(0);
+                Disengage();
             }
         }
         else
@@ -169,8 +168,6 @@ public class PlayerController : MonoBehaviour, IController
             TargetingDot._instance.DisableTarget();
 
             _stanceComponent.ToggleStanceUI(false);
-
-            _characterAnimator.SetIKWeight(0);
         }
     }
     private void OnStanceRotateGP(InputValue value)
@@ -433,15 +430,19 @@ public class PlayerController : MonoBehaviour, IController
 
         if (_rigidBody.velocity.magnitude < 1)
         {
-            _characterAnimator.SetWalkValues(0);
+            CurrentWalkValue = Mathf.Lerp(CurrentWalkValue, 0, Time.deltaTime * 5);
+            _characterAnimator.SetWalkValues(CurrentWalkValue);
         }
         else if (_rigidBody.velocity.magnitude > 0 && !Run)
         {
-            _characterAnimator.SetWalkValues(0.8f);
+            CurrentWalkValue = Mathf.Lerp(CurrentWalkValue, 0.8f, Time.deltaTime * 5);
+            _characterAnimator.SetWalkValues(CurrentWalkValue);
         }
         else if (_rigidBody.velocity.magnitude > 0 && Run)
         {
-            _characterAnimator.SetWalkValues(1.0f);
+            CurrentWalkValue = Mathf.Lerp(CurrentWalkValue, 1, Time.deltaTime * 5);
+
+            _characterAnimator.SetWalkValues(CurrentWalkValue);
         }
     }
     private void RigidBodyAttackingMovement(bool isHeavy)
@@ -464,10 +465,15 @@ public class PlayerController : MonoBehaviour, IController
     public void Engage()
     {
         Engaged = true;
+        _characterAnimator.Engaged = Engaged;
+        _characterAnimator.SetIKWeight(1);
     }
 
     public void Disengage()
     {
         Engaged = false;
+        _characterAnimator.Engaged = Engaged;
+        _characterAnimator.SetIKWeight(0);
+        _stanceComponent.ToggleStanceUI(false);
     }
 }
