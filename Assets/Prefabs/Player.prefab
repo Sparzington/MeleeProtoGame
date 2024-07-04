@@ -4694,7 +4694,9 @@ MonoBehaviour:
   MovementVector: {x: 0, y: 0, z: 0}
   PrevMovementVector: {x: 0, y: 0, z: 0}
   MovementAccel: 150
-  MaxSpeed: 3
+  WalkMax: 3
+  RunMax: 5
+  Run: 0
   TargetingMask:
     serializedVersion: 2
     m_Bits: 128
@@ -4896,10 +4898,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 2
+  m_Radius: 0.29
+  m_Height: 1.8334193
   m_Direction: 1
-  m_Center: {x: 0, y: 1, z: 0}
+  m_Center: {x: 0, y: 0.91670966, z: 0}
 --- !u!54 &7276086210078354622
 Rigidbody:
   m_ObjectHideFlags: 0

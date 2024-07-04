@@ -38,6 +38,7 @@ public class PlayerController : MonoBehaviour, IController
     private Vector3 MousePos;
     private Vector3 ScreenCenter;
     public float Angle;
+    private float PrevAngle;
 
     //Movement - Attacks
     [SerializeField] private float WindupMoveForce;
@@ -177,8 +178,13 @@ public class PlayerController : MonoBehaviour, IController
             Vector2 f = value.Get<Vector2>();
             Angle = GetAngle(f);
 
-            _stanceComponent.UpdateRotation(Angle);
-            _characterAnimator.SetStanceAnim(Angle);
+            if (Angle != 0)
+            {
+                PrevAngle = Angle;
+            }
+
+            _stanceComponent.UpdateRotation(PrevAngle);
+            _characterAnimator.SetStanceAnim(PrevAngle);
         }        
     }
 
@@ -215,7 +221,7 @@ public class PlayerController : MonoBehaviour, IController
             {
                 IsHeavyAttack = false;
                 //_rigidBody.AddForce(Vector3.forward*LightMoveForce,ForceMode.VelocityChange);
-                _characterAnimator.PlayAttack(Angle, AttackTier.LIGHT);
+                _characterAnimator.PlayAttack(PrevAngle, AttackTier.LIGHT);
             }
         }        
     }
@@ -229,7 +235,7 @@ public class PlayerController : MonoBehaviour, IController
             {
                 IsHeavyAttack = true;
                 //_rigidBody.AddForce(Vector3.forward*HeavyMoveForce, ForceMode.VelocityChange);
-                _characterAnimator.PlayAttack(Angle, AttackTier.HEAVY);
+                _characterAnimator.PlayAttack(PrevAngle, AttackTier.HEAVY);
             }
         }        
     }
@@ -281,7 +287,14 @@ public class PlayerController : MonoBehaviour, IController
     {
         if (Engaged)
         {
-            CombatMovement(WalkMax * 0.85f);
+            TargetDirection = (TargetTransform.position - transform.position).normalized;
+            TargetDirection.y = 0;
+            transform.forward = TargetDirection;
+
+            if (_fighter.EngageMovement)
+            {
+                CombatMovement(WalkMax * 0.85f);
+            }
         }
         else
         {
@@ -300,11 +313,6 @@ public class PlayerController : MonoBehaviour, IController
     {
         if (Engaged)
         {
-            TargetDirection = (TargetTransform.position - transform.position).normalized;
-            TargetDirection.y = 0;
-            transform.forward = TargetDirection;
-
-
             //Animator State mmachine
             switch (_fighter.currentState)
             {
@@ -318,10 +326,6 @@ public class PlayerController : MonoBehaviour, IController
                     _characterAnimator.SetAnimatorWeight(1, 0, 1);
 
                     break;
-
-                case FightState.ATTACKING:
-
-                    break;
                 default:
                     break;
             }
@@ -331,6 +335,8 @@ public class PlayerController : MonoBehaviour, IController
         ///IF character is being animated from an attack input
         /// move character by [LIGHT,HEAVY] move values over time for SMOOTH movement
         /// 
+
+        /*
         switch (_attackingStage)
         {
             case AttackingStage.NONE:
@@ -365,29 +371,28 @@ public class PlayerController : MonoBehaviour, IController
             default:
                 break;
         }
+        */
+
     }
     private void CombatMovement(float maxspeed)
     {
-        if (_fighter.currentState == FightState.IDLE)
+        if (MovementVector != Vector3.zero)
         {
-            if (MovementVector != Vector3.zero)
+            PrevMovementVector = MovementVector;
+
+            FinalMoveVector = (transform.forward * MovementVector.z) + (transform.right * MovementVector.x);
+            FinalMoveVector.Normalize();
+
+            _rigidBody.AddForce(FinalMoveVector * MovementAccel, ForceMode.Force);
+
+            if (_rigidBody.velocity.magnitude > maxspeed)
             {
-                PrevMovementVector = MovementVector;
-
-                FinalMoveVector = (transform.forward * MovementVector.z) + (transform.right * MovementVector.x);
-                FinalMoveVector.Normalize();
-
-                _rigidBody.AddForce(FinalMoveVector * MovementAccel , ForceMode.Force);
-
-                if (_rigidBody.velocity.magnitude > maxspeed)
-                {
-                    _rigidBody.velocity = _rigidBody.velocity.normalized * maxspeed;
-                }
+                _rigidBody.velocity = _rigidBody.velocity.normalized * maxspeed;
             }
-            else
-            {
-                _rigidBody.velocity = Vector3.Lerp(_rigidBody.velocity, Vector3.zero, MovementAccel*Time.fixedDeltaTime);
-            }
+        }
+        else
+        {
+            _rigidBody.velocity = Vector3.Lerp(_rigidBody.velocity, Vector3.zero, MovementAccel * Time.fixedDeltaTime);
         }
     }
 
@@ -406,7 +411,7 @@ public class PlayerController : MonoBehaviour, IController
         Vector3 inputDir = Orientation.forward*vert + Orientation.right*horiz;
         if (inputDir != Vector3.zero)
         {
-            transform.forward = Vector3.Slerp(transform.forward, inputDir, Time.deltaTime * 2);
+            transform.forward = Vector3.Slerp(transform.forward, inputDir, Time.fixedDeltaTime * 2);
         }
 
         if (MovementVector != Vector3.zero)

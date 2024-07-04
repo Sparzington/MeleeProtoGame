@@ -38,6 +38,9 @@ public class Fighter : MonoBehaviour, IDamageable, IFighter, ITargetable
     private Attack PreviousAttack;
     private ComboLevel _currentAttackLevel;
 
+    //Movement 
+    public bool EngageMovement { get; private set; }
+
     public FightState currentState
     {
         get
@@ -157,6 +160,7 @@ public class Fighter : MonoBehaviour, IDamageable, IFighter, ITargetable
                 DoFullRecovery = false;
                 DoComboRecovery = false;
                 CanAttack = true;
+                EngageMovement = true;
 
                 break;
             case FightState.WINDUP:
@@ -167,10 +171,12 @@ public class Fighter : MonoBehaviour, IDamageable, IFighter, ITargetable
             case FightState.ATTACKING:
                 CanAttack = false;
                 currentBuffer = 0.0f;
+                EngageMovement = false;
 
                 break;
 
             case FightState.COMBORECOVER:
+                EngageMovement = true;
 
                 CanCombo = currentBuffer < inputBuffer;
 
