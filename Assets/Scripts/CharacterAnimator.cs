@@ -26,6 +26,9 @@ public class CharacterAnimator : MonoBehaviour
     private int LeftLow;
     private int RightHigh;
     private int _RightLow;
+
+    private int _AngleX;
+    private int _AngleY;
         //Attacks
     private int _LeftLightHigh;
     private int _LeftHeavyHigh;
@@ -74,8 +77,12 @@ public class CharacterAnimator : MonoBehaviour
         InitHash(ref _RightLightLow, RightLightLower);
         InitHash(ref _RightHeavyLow, RightHeavyLower);
 
+        _AngleX = Animator.StringToHash("Angle_X");
+        _AngleY = Animator.StringToHash("Angle_Y");
+
         _WalkX = Animator.StringToHash("WalkX");
         _WalkY = Animator.StringToHash("WalkY");
+
         _FreeWalk = Animator.StringToHash("FreeWalk");
         _Engaged = Animator.StringToHash("Engaged");
 
@@ -138,11 +145,13 @@ public class CharacterAnimator : MonoBehaviour
                 LeftArmRig.weight = Mathf.MoveTowards(0, 1, rigResetTimer);
             }            
         }
-    }    
+    }
     public void SetWalkValues(float walkValue)
     {
         _animator.SetFloat(_FreeWalk, walkValue);
     }
+
+    //Aim Integer method
     public void SetStanceAnim(float angle)
     {
         if (angle > 0 && angle <= 90)
@@ -164,6 +173,16 @@ public class CharacterAnimator : MonoBehaviour
             _animator.SetInteger("Aim", 1);
 
         }
+    }
+
+    //Aim Blend tree method
+    public void SetStanceAim(float X, float Y)
+    {
+        X = Mathf.Clamp(X, -1, 1);
+        Y = Mathf.Clamp(Y, 1, 1);
+
+        _animator.SetFloat(_AngleX, X);
+        _animator.SetFloat(_AngleY, Y);
     }
 
     public void PlayAttack(float angle, AttackTier tier)
