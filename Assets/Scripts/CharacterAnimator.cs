@@ -77,9 +77,11 @@ public class CharacterAnimator : MonoBehaviour
         InitHash(ref _RightLightLow, RightLightLower);
         InitHash(ref _RightHeavyLow, RightHeavyLower);
 
+        //Stance Aiming
         _AngleX = Animator.StringToHash("Angle_X");
         _AngleY = Animator.StringToHash("Angle_Y");
 
+        //Legs Direction combat
         _WalkX = Animator.StringToHash("WalkX");
         _WalkY = Animator.StringToHash("WalkY");
 
@@ -146,9 +148,21 @@ public class CharacterAnimator : MonoBehaviour
             }            
         }
     }
-    public void SetWalkValues(float walkValue)
+    public void SetFreeWalkValues(float walkValue)
     {
         _animator.SetFloat(_FreeWalk, walkValue);
+    }
+
+    public void SetCombatWalkValues(float newX, float newY, float time)
+    {
+        float x = _animator.GetFloat(_WalkX);
+        float y  = _animator.GetFloat(_WalkY);
+
+        x = Mathf.Lerp(x, newX, time * 5);
+        y = Mathf.Lerp(y, newY, time * 5);
+
+        _animator.SetFloat(_WalkX, x);
+        _animator.SetFloat(_WalkY, y);
     }
 
     //Aim Integer method
@@ -179,7 +193,7 @@ public class CharacterAnimator : MonoBehaviour
     public void SetStanceAim(float X, float Y)
     {
         X = Mathf.Clamp(X, -1, 1);
-        Y = Mathf.Clamp(Y, 1, 1);
+        Y = Mathf.Clamp(Y, -1, 1);
 
         _animator.SetFloat(_AngleX, X);
         _animator.SetFloat(_AngleY, Y);

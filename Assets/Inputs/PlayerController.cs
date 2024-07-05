@@ -34,11 +34,14 @@ public class PlayerController : MonoBehaviour, IController
     //Stance Aiming
     [Range(0f, 1f)]
     [SerializeField] private float DeadZone = 0.05f;
+    public Vector2 RightAIm;
     private float StanceDeadZone;
     private Vector3 MousePos;
     private Vector3 ScreenCenter;
     public float Angle;
     private float PrevAngle;
+    private float PrevAngle_X;
+    private float PrevAngle_Y;
 
     //Movement - Attacks
     [SerializeField] private float WindupMoveForce;
@@ -176,15 +179,19 @@ public class PlayerController : MonoBehaviour, IController
         if (Engaged)
         {
             Vector2 f = value.Get<Vector2>();
+            RightAIm = f;
             Angle = GetAngle(f);
 
-            if (Angle != 0)
+            if (f != Vector2.zero)
             {
+                PrevAngle_X = f.x;
+                PrevAngle_Y = f.y;
                 PrevAngle = Angle;
             }
 
             _stanceComponent.UpdateRotation(PrevAngle);
-            _characterAnimator.SetStanceAnim(PrevAngle);
+            //_characterAnimator.SetStanceAnim(PrevAngle);
+            _characterAnimator.SetStanceAim(PrevAngle_X, PrevAngle_Y);
         }        
     }
 
@@ -394,6 +401,9 @@ public class PlayerController : MonoBehaviour, IController
         {
             _rigidBody.velocity = Vector3.Lerp(_rigidBody.velocity, Vector3.zero, MovementAccel * Time.fixedDeltaTime);
         }
+
+        //Animator values
+        _characterAnimator.SetCombatWalkValues(MovementVector.x, MovementVector.z, Time.deltaTime);
     }
 
     //Help from https://www.youtube.com/watch?v=UCwwn2q4Vys&t=332s
@@ -411,7 +421,7 @@ public class PlayerController : MonoBehaviour, IController
         Vector3 inputDir = Orientation.forward*vert + Orientation.right*horiz;
         if (inputDir != Vector3.zero)
         {
-            transform.forward = Vector3.Slerp(transform.forward, inputDir, Time.fixedDeltaTime * 2);
+            transform.forward = Vector3.Slerp(transform.forward, inputDir, Time.fixedDeltaTime * 5);
         }
 
         if (MovementVector != Vector3.zero)
@@ -433,21 +443,23 @@ public class PlayerController : MonoBehaviour, IController
             _rigidBody.velocity = Vector3.Lerp(_rigidBody.velocity, Vector3.zero, MovementAccel * Time.fixedDeltaTime);
         }
 
+
+        //Animator values
         if (_rigidBody.velocity.magnitude < 1)
         {
             CurrentWalkValue = Mathf.Lerp(CurrentWalkValue, 0, Time.deltaTime * 5);
-            _characterAnimator.SetWalkValues(CurrentWalkValue);
+            _characterAnimator.SetFreeWalkValues(CurrentWalkValue);
         }
         else if (_rigidBody.velocity.magnitude > 0 && !Run)
         {
             CurrentWalkValue = Mathf.Lerp(CurrentWalkValue, 0.8f, Time.deltaTime * 5);
-            _characterAnimator.SetWalkValues(CurrentWalkValue);
+            _characterAnimator.SetFreeWalkValues(CurrentWalkValue);
         }
         else if (_rigidBody.velocity.magnitude > 0 && Run)
         {
             CurrentWalkValue = Mathf.Lerp(CurrentWalkValue, 1, Time.deltaTime * 5);
 
-            _characterAnimator.SetWalkValues(CurrentWalkValue);
+            _characterAnimator.SetFreeWalkValues(CurrentWalkValue);
         }
     }
     private void RigidBodyAttackingMovement(bool isHeavy)
