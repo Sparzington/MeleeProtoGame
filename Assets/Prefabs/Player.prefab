@@ -4557,6 +4557,7 @@ GameObject:
   - component: {fileID: 115203767768449000}
   - component: {fileID: 2657162709382864540}
   - component: {fileID: 7276086210078354622}
+  - component: {fileID: 2625790087232755334}
   m_Layer: 7
   m_Name: Player
   m_TagString: Untagged
@@ -4942,6 +4943,27 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 112
   m_CollisionDetection: 0
+--- !u!114 &2625790087232755334
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5071227408047777351}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ea3bbe43b61d244da7af44710b4fd1f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SwordImpact:
+    Name: Impact
+    clip: {fileID: 8300000, guid: 2d26be7c6e1909e498be896b27c70563, type: 3}
+    Volume: 0.553
+    Loop: 0
+    SpatialBlend: 0.86
+    RandomizePitch: 0
+    MaxPitchOffset: 0
+    MaxRange: 5
 --- !u!1 &5092924056720305610
 GameObject:
   m_ObjectHideFlags: 0
@@ -6634,6 +6656,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5455194952663790769}
   - component: {fileID: 6266565713806610638}
+  - component: {fileID: 4032811767068234247}
   m_Layer: 0
   m_Name: HitBox Colider
   m_TagString: Untagged
@@ -6677,6 +6700,18 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1.2}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &4032811767068234247
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7082117196366154998}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 494bf0bcfc452ff47b7473ceb72336a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7165225026997252732
 GameObject:
   m_ObjectHideFlags: 0

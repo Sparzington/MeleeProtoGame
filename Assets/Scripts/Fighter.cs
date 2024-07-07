@@ -56,6 +56,8 @@ public class Fighter : MonoBehaviour, IDamageable, IFighter, ITargetable
     private HeldWeapon _heldWeapon; //Actual Weapon
     [SerializeField] private Collider HitBoxCollider;    //Set 'hitbox' collider
 
+    public event EventHandler OnWeaponContact;
+
     public bool DebugWindow;
     private void Start()
     {
@@ -63,33 +65,7 @@ public class Fighter : MonoBehaviour, IDamageable, IFighter, ITargetable
         {
             DeactivateWeapon();
         }
-
-        if (_heldWeapon != null)
-            _heldWeapon.OnWeaponStrike += OnEnemyHit;
     }
-    private void OnDestroy()
-    {
-        if (_heldWeapon != null)
-            _heldWeapon.OnWeaponStrike -= OnEnemyHit;
-    }
-
-    private void OnEnemyHit(object sender, Fighter e)
-    {
-        switch (QueuedAttack.Tier)
-        {
-            case AttackTier.LIGHT:
-                e.TakeDamage(LightDamage);
-
-                break;
-            case AttackTier.HEAVY:
-                e.TakeDamage(HeavyDamage);
-                
-                break;
-            default:
-                break;
-        }
-    }
-
     public void FighterInit()
     {
         _heldWeapon = GetComponentInChildren<HeldWeapon>();
@@ -416,6 +392,7 @@ public class Fighter : MonoBehaviour, IDamageable, IFighter, ITargetable
     /// </summary>
     public void ActivateWeapon()
     {
+        float x = transform.rotation.x;
         //_heldWeapon.ToggleCollider(true);
         HitBoxCollider.enabled = true;        
     }
@@ -426,6 +403,11 @@ public class Fighter : MonoBehaviour, IDamageable, IFighter, ITargetable
     }
     private void OnTriggerEnter(Collider other)
     {
+        if(HitBoxCollider == null)
+        {
+            return;
+        }
+
         if (HitBoxCollider.enabled && other.TryGetComponent<IDamageable>(out IDamageable damageable))
         {
             Debug.Log($"Attacked: {other.name}");
@@ -448,6 +430,8 @@ public class Fighter : MonoBehaviour, IDamageable, IFighter, ITargetable
                 default:
                     break;
             }
+
+            OnWeaponContact?.Invoke(this, EventArgs.Empty);
         }
     }
     #endregion

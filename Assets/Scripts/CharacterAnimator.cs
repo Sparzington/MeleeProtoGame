@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Animations;
 //using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Animations.Rigging;
@@ -12,6 +13,9 @@ public class CharacterAnimator : MonoBehaviour
 
     //Fighter component - Read Only
     private Fighter _fighter;
+
+    [Header("Anim. Controller")]
+    [SerializeField] private AnimatorController _controller;
 
     [Header("IK Rigs")]
     [SerializeField] private Rig LeftArmRig;
@@ -65,6 +69,7 @@ public class CharacterAnimator : MonoBehaviour
     private void Awake()
     {
         _animator = GetComponent<Animator>();
+        _animator.runtimeAnimatorController = _controller;
 
         _fighter = GetComponent<Fighter>();
 
