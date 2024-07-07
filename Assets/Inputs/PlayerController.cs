@@ -22,7 +22,6 @@ public class PlayerController : MonoBehaviour, IController
 
     //Rigidbody componenet
     private Rigidbody _rigidBody;
-    private AttackingStage _attackingStage;
 
     //Facing Camera
     [SerializeField] private CinemachineFreeLook _FreeLookCamera;
@@ -58,7 +57,6 @@ public class PlayerController : MonoBehaviour, IController
     [SerializeField] private float RunMax = 5;
     private float CurrentWalkValue = 0;
     public bool Run;
-    private InputValue RunButton;
 
     //Bool for if locking on to target
     public bool Engaged
@@ -108,8 +106,6 @@ public class PlayerController : MonoBehaviour, IController
 
         StanceDeadZone = Screen.width * DeadZone;
         ScreenCenter = new Vector2(Screen.width / 2, Screen.height / 2);
-
-        _attackingStage = AttackingStage.NONE;
     }
 
     private void Start()
@@ -200,15 +196,23 @@ public class PlayerController : MonoBehaviour, IController
         if (Engaged)
         {
             MousePos = value.Get<Vector2>();
+
             if (MouseOutDeadZone(MousePos))
             {
-                Debug.Log("Outside");
+                Vector2 mouseDir = (MousePos - ScreenCenter).normalized;
 
                 Angle = GetAngle(MousePos - ScreenCenter);
+                if (Angle != 0)
+                {
+                    PrevAngle_X = mouseDir.x;
+                    PrevAngle_Y = mouseDir.y;
+                    PrevAngle = Angle;
+                }
                 MouseReset();
 
-                _stanceComponent.UpdateRotation(Angle);
-                _characterAnimator.SetStanceAnim(Angle);
+                _stanceComponent.UpdateRotation(PrevAngle);
+                //_characterAnimator.SetStanceAnim(Angle);
+                _characterAnimator.SetStanceAim(PrevAngle_X, PrevAngle_Y);
             }
             else
             {
@@ -222,12 +226,19 @@ public class PlayerController : MonoBehaviour, IController
     {
         if (Engaged)
         {
-            bool onRight = _stanceComponent.IsOnRightSide();
-            _fighter.LightAttack();
+            //bool onRight = _stanceComponent.IsOnRightSide();
+            if (PrevAngle < 0 && PrevAngle > -180)
+            {
+                _fighter.LightAttack(true);
+            }
+            else
+            {
+                _fighter.LightAttack(false);
+            }
+
             if (_fighter.CanAttack)
             {
                 IsHeavyAttack = false;
-                //_rigidBody.AddForce(Vector3.forward*LightMoveForce,ForceMode.VelocityChange);
                 _characterAnimator.PlayAttack(PrevAngle, AttackTier.LIGHT);
             }
         }        
@@ -236,7 +247,6 @@ public class PlayerController : MonoBehaviour, IController
     {
         if (Engaged)
         {
-            bool onRight = _stanceComponent.IsOnRightSide();
             _fighter.HeavyAttack();
             if (_fighter.CanAttack)
             {
@@ -270,7 +280,6 @@ public class PlayerController : MonoBehaviour, IController
         return dist.magnitude > StanceDeadZone;
     }
     #endregion
-
     private Transform ScanForTarget()
     {
         Transform newTarget = transform;
@@ -337,49 +346,6 @@ public class PlayerController : MonoBehaviour, IController
                     break;
             }
         }       
-        
-
-        ///IF character is being animated from an attack input
-        /// move character by [LIGHT,HEAVY] move values over time for SMOOTH movement
-        /// 
-
-        /*
-        switch (_attackingStage)
-        {
-            case AttackingStage.NONE:
-                Debug.Log("None");
-
-                if (_fighter.currentState == FightState.WINDUP)
-                {
-                    _attackingStage = AttackingStage.WINDUP; 
-                }
-                break;
-            case AttackingStage.WINDUP:
-                Debug.Log("Windup");
-
-                //_rigidBody.AddForce(transform.forward * WindupMoveForce, ForceMode.Force);
-                
-                if (_fighter.currentState == FightState.ATTACKING)
-                {
-                    _attackingStage = AttackingStage.ACTIVE;
-                }
-                break;
-
-            case AttackingStage.ACTIVE:
-                Debug.Log("Active");
-
-                //RigidBodyAttackingMovement(IsHeavyAttack);
-
-                if (_fighter.currentState == FightState.COMBORECOVER)
-                {
-                    _attackingStage = AttackingStage.NONE;
-                }
-                break;
-            default:
-                break;
-        }
-        */
-
     }
     private void CombatMovement(float maxspeed)
     {
@@ -462,16 +428,7 @@ public class PlayerController : MonoBehaviour, IController
             _characterAnimator.SetFreeWalkValues(CurrentWalkValue);
         }
     }
-    private void RigidBodyAttackingMovement(bool isHeavy)
-    {
-        if (isHeavy)
-        {
-            _rigidBody.AddForce(transform.forward * HeavyMoveForce, ForceMode.Force);
-            return;
-        }
-        
-        _rigidBody.AddForce(transform.forward * LightMoveForce, ForceMode.Force);
-    }
+
 
     private void OnDrawGizmos()
     {

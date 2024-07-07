@@ -12,10 +12,7 @@ public class HeldWeapon : MonoBehaviour
     private void Awake()
     {
         WeaponCollider = GetComponent<Collider>();
-
-        //Physics.IgnoreCollision(gameObject.GetComponentInParent<Collider>(), WeaponCollider, true);
-
-        //ToggleCollider(false);
+        ToggleCollider(false);
     }
 
     public void ToggleCollider(bool toggle)
@@ -25,11 +22,11 @@ public class HeldWeapon : MonoBehaviour
             WeaponCollider.enabled = toggle;
         }
     }
-
     private void OnTriggerEnter(Collider other)
     {
         if (other.TryGetComponent<Fighter>(out Fighter f))
         {
+            Debug.Log($"Sword hit {f.gameObject.name}");
             OnWeaponStrike?.Invoke(this, f);
         }
     }

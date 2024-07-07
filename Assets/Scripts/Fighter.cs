@@ -7,9 +7,10 @@ public enum FightState { IDLE, WINDUP, ATTACKING, COMBORECOVER, FULLRECOVER }
 
 public class Fighter : MonoBehaviour, IDamageable, IFighter, ITargetable
 {
-
+    [Header("Fighter Data")]
     [SerializeField] private FighterSO FighterData;
 
+    [Header ("Combo")]
     //Combos
     public Combo[] PossibleCombos;
     [SerializeField]private int CurrentComboIndex = 0;
@@ -25,6 +26,7 @@ public class Fighter : MonoBehaviour, IDamageable, IFighter, ITargetable
     public bool CanAttack;
     [SerializeField] private FightState CurrentState;
 
+    [Header("Inputs")]
     //Input Buffers
     [SerializeField] private float inputBuffer = 0.6f;
     [SerializeField] private float fullRecoveryBuffer = 0.6f;
@@ -49,12 +51,19 @@ public class Fighter : MonoBehaviour, IDamageable, IFighter, ITargetable
         }
     }
 
+    [Header("Weapon")]
     //Weapon
-    private HeldWeapon _heldWeapon;
+    private HeldWeapon _heldWeapon; //Actual Weapon
+    [SerializeField] private Collider HitBoxCollider;    //Set 'hitbox' collider
 
     public bool DebugWindow;
     private void Start()
     {
+        if (HitBoxCollider != null)
+        {
+            DeactivateWeapon();
+        }
+
         if (_heldWeapon != null)
             _heldWeapon.OnWeaponStrike += OnEnemyHit;
     }
@@ -236,20 +245,27 @@ public class Fighter : MonoBehaviour, IDamageable, IFighter, ITargetable
     }
 
     //Actions
-    public void LightAttack()
+    public void LightAttack(bool bash)
     {
-        QueueNextAttack(AttackTier.LIGHT);
+        if (bash)
+        {
+            QueueNextAttack(AttackTier.LIGHT, ImpactType.BASH);
+        }
+        else
+        {
+            QueueNextAttack(AttackTier.LIGHT, ImpactType.BLADE);
+        }
     }
     public void HeavyAttack()
     {
-        QueueNextAttack(AttackTier.HEAVY);
+        QueueNextAttack(AttackTier.HEAVY, ImpactType.BLADE);
     }
 
-    private void QueueNextAttack(AttackTier newTier)
+    private void QueueNextAttack(AttackTier newTier, ImpactType type)
     {
         if (CanAttack && CurrentComboIndex < MaxComboIndex)
         {
-            QueuedAttack = new Attack(newTier);
+            QueuedAttack = new Attack(newTier, type);
 
             //If we are queueing another attack
             if (CurrentComboIndex > 0 && CanCombo)
@@ -329,6 +345,7 @@ public class Fighter : MonoBehaviour, IDamageable, IFighter, ITargetable
         CanAttack = false;
         CurrentState = FightState.WINDUP;
 
+
         AttackSlider.instance.SetTimer(0);
 
     }
@@ -336,7 +353,19 @@ public class Fighter : MonoBehaviour, IDamageable, IFighter, ITargetable
     {
         //Debug.Log("Attack");
         CurrentState = FightState.ATTACKING;
-        _heldWeapon.ToggleCollider(true);
+
+        switch (QueuedAttack.Type)
+        {
+            case ImpactType.BASH:
+                
+                break;
+            case ImpactType.BLADE:
+                ActivateWeapon();
+
+                break;
+            default:
+                break;
+        }
 
     }
     public void Recover()
@@ -344,7 +373,7 @@ public class Fighter : MonoBehaviour, IDamageable, IFighter, ITargetable
         //Debug.Log("Recover");
 
         CurrentState = FightState.COMBORECOVER;
-        _heldWeapon.ToggleCollider(false);
+        DeactivateWeapon();
 
         CanAttack = true;
         AttackSlider.instance.SetTimer(inputBuffer);        
@@ -381,19 +410,48 @@ public class Fighter : MonoBehaviour, IDamageable, IFighter, ITargetable
         }        
     }
 
-    //Weapon
+    #region Weapon stuff
     /// <summary>
     /// Used in Animation events to toggle On/Off weapon collider
     /// </summary>
     public void ActivateWeapon()
     {
-        _heldWeapon.ToggleCollider(true);
+        //_heldWeapon.ToggleCollider(true);
+        HitBoxCollider.enabled = true;        
     }
     public void DeactivateWeapon()
     {
-        _heldWeapon.ToggleCollider(false);
+        //_heldWeapon.ToggleCollider(false);
+        HitBoxCollider.enabled = false;
     }
-    
+    private void OnTriggerEnter(Collider other)
+    {
+        if (HitBoxCollider.enabled && other.TryGetComponent<IDamageable>(out IDamageable damageable))
+        {
+            Debug.Log($"Attacked: {other.name}");
+            if (QueuedAttack.Type == ImpactType.BASH)
+            {
+                // TODO: (figure out what a 'bash' will do)
+                return;
+            }
+
+            switch (QueuedAttack.Tier)
+            {
+                case AttackTier.LIGHT:
+                    damageable.TakeDamage(LightDamage);
+
+                    break;
+                case AttackTier.HEAVY:
+                    damageable.TakeDamage(HeavyDamage);
+
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+    #endregion
+
     //Health & Damage
     public void TakeDamage(int n)
     {

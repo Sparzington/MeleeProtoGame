@@ -4,7 +4,7 @@ using UnityEngine;
 
 public interface IFighter
 {
-    public void LightAttack();
+    public void LightAttack(bool bash);
     public void HeavyAttack();
     public void Block();
 
