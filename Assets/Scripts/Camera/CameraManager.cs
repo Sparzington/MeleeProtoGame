@@ -23,6 +23,8 @@ public class CameraManager : MonoBehaviour
             Debug.LogWarning("! Combat camera not refenreced !");
         }
 
+        ActivateThirdPersonCamera();
+
         PlayerController.OnEngage += PlayerController_OnEngage;
         PlayerController.OnDisengage += PlayerController_OnDisengage;
     }

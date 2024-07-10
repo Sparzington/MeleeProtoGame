@@ -158,6 +158,37 @@ MonoBehaviour:
         m_Calls: []
   m_LegacyBlendHint: 0
   m_ComponentOwner: {fileID: 5333250704977664602}
+--- !u!1 &2887253377921936775
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1469211158189996814}
+  m_Layer: 0
+  m_Name: Aim
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1469211158189996814
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2887253377921936775}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5805758533051533459}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3419030571929141869
 GameObject:
   m_ObjectHideFlags: 0
@@ -332,8 +363,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4888083606711292699}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.033500496, y: -0.13892595, z: -0.0047024065, w: 0.9897248}
-  m_LocalPosition: {x: 10.400624, y: 1.1801001, z: -4.18171}
+  m_LocalRotation: {x: -0.0335589, y: -0.12602204, z: -0.0042656306, w: 0.9914505}
+  m_LocalPosition: {x: 10.448351, y: 1.18, z: -4.366401}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1238,6 +1269,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6907406211654998960}
+  - {fileID: 1469211158189996814}
   m_Father: {fileID: 8110663749488881395}
   m_LocalEulerAnglesHint: {x: 0, y: -19.993, z: 0}
 --- !u!114 &1402634228384201114
@@ -1291,3 +1323,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 624e4880efe76ae4fa1e110e88c64b33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  AimTranform: {fileID: 1469211158189996814}

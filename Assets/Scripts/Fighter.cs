@@ -24,7 +24,7 @@ public class Fighter : MonoBehaviour, IDamageable, IFighter, ITargetable
     private int HeavyDamage;
     public bool Invincible;
     public bool CanAttack;
-    [SerializeField] private FightState CurrentState;
+    [SerializeField] private FightState attackState;
 
     [Header("Inputs")]
     //Input Buffers
@@ -43,11 +43,11 @@ public class Fighter : MonoBehaviour, IDamageable, IFighter, ITargetable
     //Movement 
     public bool EngageMovement { get; private set; }
 
-    public FightState currentState
+    public FightState AttackState
     {
         get
         {
-            return CurrentState;
+            return attackState;
         }
     }
 
@@ -56,7 +56,12 @@ public class Fighter : MonoBehaviour, IDamageable, IFighter, ITargetable
     private HeldWeapon _heldWeapon; //Actual Weapon
     [SerializeField] private Collider HitBoxCollider;    //Set 'hitbox' collider
 
+    //Weapon Events
     public event EventHandler OnWeaponContact;
+
+    //Attacking Events
+    public event EventHandler OnStartAttack;
+    public event EventHandler OnEndAttack;
 
     public bool DebugWindow;
     private void Start()
@@ -104,7 +109,7 @@ public class Fighter : MonoBehaviour, IDamageable, IFighter, ITargetable
 
         }
 
-        CurrentState = FightState.IDLE;
+        attackState = FightState.IDLE;
     }
 
     private void Update()
@@ -137,7 +142,7 @@ public class Fighter : MonoBehaviour, IDamageable, IFighter, ITargetable
         /// 
 
         //Buffer input states
-        switch (CurrentState)
+        switch (attackState)
         {
             case FightState.IDLE:
                 currentBuffer = 0.0f;
@@ -168,13 +173,15 @@ public class Fighter : MonoBehaviour, IDamageable, IFighter, ITargetable
                 if (!DoComboRecovery)
                 {
                     DoComboRecovery = true;
-                    AttackSlider.instance.SetTimer(inputBuffer);
+
+                    if (DebugWindow)
+                        AttackSlider.instance.SetTimer(inputBuffer);
                 }
 
                 if (currentBuffer > inputBuffer)
                 {
                     currentBuffer = 0.0f;
-                    CurrentState = FightState.FULLRECOVER;
+                    attackState = FightState.FULLRECOVER;
                 }
                 else
                 {
@@ -190,12 +197,14 @@ public class Fighter : MonoBehaviour, IDamageable, IFighter, ITargetable
                 if (!DoFullRecovery)
                 {
                     DoFullRecovery = true;
-                    AttackSlider.instance.SetTimer(fullRecoveryBuffer);
+
+                    if(DebugWindow)
+                        AttackSlider.instance.SetTimer(fullRecoveryBuffer);
                 }
 
                 if (currentBuffer > fullRecoveryBuffer)
                 {
-                    CurrentState = FightState.IDLE;
+                    attackState = FightState.IDLE;
                 }
                 else
                 {
@@ -317,18 +326,20 @@ public class Fighter : MonoBehaviour, IDamageable, IFighter, ITargetable
     {
         //Debug.Log("Windup");
 
+        OnStartAttack?.Invoke(this, EventArgs.Empty);
+
         currentBuffer = 0.0f;
         CanAttack = false;
-        CurrentState = FightState.WINDUP;
+        attackState = FightState.WINDUP;
 
-
-        AttackSlider.instance.SetTimer(0);
+        if(DebugWindow)
+            AttackSlider.instance.SetTimer(0);
 
     }
     public void FollowThrough()
     {
         //Debug.Log("Attack");
-        CurrentState = FightState.ATTACKING;
+        attackState = FightState.ATTACKING;
 
         switch (QueuedAttack.Type)
         {
@@ -348,17 +359,23 @@ public class Fighter : MonoBehaviour, IDamageable, IFighter, ITargetable
     {
         //Debug.Log("Recover");
 
-        CurrentState = FightState.COMBORECOVER;
+        attackState = FightState.COMBORECOVER;
         DeactivateWeapon();
 
         CanAttack = true;
-        AttackSlider.instance.SetTimer(inputBuffer);        
+
+        if (DebugWindow)
+            AttackSlider.instance.SetTimer(inputBuffer);        
     }
 
     public void FullRecover()
     {
+        OnEndAttack?.Invoke(this, EventArgs.Empty);
+
         CanAttack = false;
-        AttackSlider.instance.SetTimer(fullRecoveryBuffer);
+
+        if (DebugWindow)
+            AttackSlider.instance.SetTimer(fullRecoveryBuffer);
     }
 
 

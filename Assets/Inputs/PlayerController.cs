@@ -25,6 +25,7 @@ public class PlayerController : MonoBehaviour, IController
 
     //Facing Camera
     [SerializeField] private CinemachineFreeLook _FreeLookCamera;
+    private GameObject CamGrab;
     
     //Mesh Object
     [SerializeField] private Transform PlayerBody;
@@ -78,10 +79,14 @@ public class PlayerController : MonoBehaviour, IController
     private void Awake()
     {
         //Camera
-        _FreeLookCamera = GameObject.Find("Freelook Camera").GetComponent<CinemachineFreeLook>();
-        if (_FreeLookCamera == null)
+        CamGrab = GameObject.Find("Freelook Camera");
+        if (CamGrab == null)
         {
             Debug.LogWarning("! No Player camera refernced !");
+        }
+        else
+        {
+            _FreeLookCamera = CamGrab.GetComponent<CinemachineFreeLook>();
         }
 
         //Stance targeting
@@ -132,7 +137,7 @@ public class PlayerController : MonoBehaviour, IController
 
     private void OnRun(InputValue value)
     {
-        if (_fighter.currentState == FightState.IDLE)
+        if (_fighter.AttackState == FightState.IDLE)
         {
             Run = !Run;
         }
@@ -211,14 +216,20 @@ public class PlayerController : MonoBehaviour, IController
                 MouseReset();
 
                 _stanceComponent.UpdateRotation(PrevAngle);
-                //_characterAnimator.SetStanceAnim(Angle);
                 _characterAnimator.SetStanceAim(PrevAngle_X, PrevAngle_Y);
             }
             else
             {
                 Cursor.lockState = CursorLockMode.Confined;
             }
-        }        
+        }
+        else
+        {
+            if (Cursor.lockState == CursorLockMode.Locked)
+            {
+                Cursor.lockState = CursorLockMode.Confined;
+            }
+        }
     }
     
     //Attacks 
@@ -226,7 +237,8 @@ public class PlayerController : MonoBehaviour, IController
     {
         if (Engaged)
         {
-            //bool onRight = _stanceComponent.IsOnRightSide();
+            //First we send input to 'Fighter' that we want to do an 'Attack'
+            // 'Fighter' checks for valid combo (or) if we are able to attack at this time.
             if (PrevAngle < 0 && PrevAngle > -180)
             {
                 _fighter.LightAttack(true);
@@ -236,6 +248,8 @@ public class PlayerController : MonoBehaviour, IController
                 _fighter.LightAttack(false);
             }
 
+            //IF the 'Attack' is valid, we tell animator to play attack animation.
+            //Animation sends 'anim-events' to fighter to handle attack states
             if (_fighter.CanAttack)
             {
                 IsHeavyAttack = false;
@@ -284,6 +298,11 @@ public class PlayerController : MonoBehaviour, IController
     {
         Transform newTarget = transform;
 
+        for (int i = 0; i < PotentialTargets.Length; i++)
+        {
+            PotentialTargets[i] = null;
+        }
+
         int n = Physics.OverlapSphereNonAlloc(transform.position, ScanRadius, PotentialTargets, TargetingMask);
         if (n-1 > 0)
         {
@@ -330,16 +349,15 @@ public class PlayerController : MonoBehaviour, IController
         if (Engaged)
         {
             //Animator State mmachine
-            switch (_fighter.currentState)
+            switch (_fighter.AttackState)
             {
                 case FightState.IDLE:
-                    _characterAnimator.SetStanceAnim(_stanceComponent.Angle);
-                    _characterAnimator.SetAnimatorWeight(1, 1, 1);
+                    _characterAnimator.SetLayerWeight(1, 1, 1);
 
                     break;
 
                 case FightState.WINDUP:
-                    _characterAnimator.SetAnimatorWeight(1, 0, 1);
+                    _characterAnimator.SetLayerWeight(1, 0, 1);
 
                     break;
                 default:
@@ -440,14 +458,12 @@ public class PlayerController : MonoBehaviour, IController
     {
         Engaged = true;
         _characterAnimator.Engaged = Engaged;
-        _characterAnimator.SetIKWeight(1);
     }
 
     public void Disengage()
     {
         Engaged = false;
         _characterAnimator.Engaged = Engaged;
-        _characterAnimator.SetIKWeight(0);
         _stanceComponent.ToggleStanceUI(false);
     }
 }

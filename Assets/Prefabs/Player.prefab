@@ -4560,7 +4560,7 @@ GameObject:
   - component: {fileID: 2625790087232755334}
   m_Layer: 7
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4662,9 +4662,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 803d6db21fab93d4fabe284d46498dbc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _controller: {fileID: 0}
   LeftArmRig: {fileID: 126804446410100134}
   RightArmRig: {fileID: 5772143032363578718}
   HeadRig: {fileID: 93243666079389007}
+  HeadAimTarget: {fileID: 1585876858543391613}
   LeftLightHigh: NewLeftLightHigh
   LeftHeavyHigh: NewHeavyLeftHigh
   LeftLightLower: LeftLight
@@ -4775,7 +4777,7 @@ MonoBehaviour:
   Health: 0
   Invincible: 0
   CanAttack: 0
-  CurrentState: 0
+  attackState: 0
   inputBuffer: 0.6
   fullRecoveryBuffer: 0.4
   HitBoxCollider: {fileID: 6266565713806610638}

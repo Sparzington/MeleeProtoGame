@@ -21,6 +21,7 @@ public class CharacterAnimator : MonoBehaviour
     [SerializeField] private Rig LeftArmRig;
     [SerializeField] private Rig RightArmRig;
     [SerializeField] private Rig HeadRig;
+    [SerializeField] private Transform HeadAimTarget;
     private float rigResetTimer;
     private float rigResetSpeed = 5f;
 
@@ -61,10 +62,9 @@ public class CharacterAnimator : MonoBehaviour
     [SerializeField] private string RightLightLower;
     [SerializeField] private string RightHeavyLower;
 
-    private int Attack; //Bool
+    private int Attack; //Animator Bool
 
     private const float animTransitionTime = 0.08f;
-
     
     private void Awake()
     {
@@ -96,22 +96,7 @@ public class CharacterAnimator : MonoBehaviour
         //anim bool
         Attack = Animator.StringToHash("Attack");
     }
-    public void SetIKWeight(float weight)
-    {
-        if (weight <= 0)
-        {
-            weight = 0;
-            _animator.SetInteger("Aim", -1);
-        }
-        else if (weight > 1.0f) 
-        {
-            weight = 1.0f; 
-        }
-
-        HeadRig.weight = weight;
-        LeftArmRig.weight = weight;
-        RightArmRig.weight = weight;
-    }
+    
 
     private void InitHash(ref int hash, string animName)
     {
@@ -120,21 +105,33 @@ public class CharacterAnimator : MonoBehaviour
             hash = Animator.StringToHash(animName);
         }
     }
-    private void LateUpdate()
-    {
+
+    private void Update()
+    {        
         _animator.SetBool(_Engaged, Engaged);
 
-        if (_fighter.currentState == FightState.ATTACKING)
+        if (_fighter.AttackState == FightState.ATTACKING)
         {
             _animator.SetBool(Attack, true);
         }
-
-        if (Engaged)
+        
+        if (!Engaged)
+        {
+            SetIKWeight(0);
+        }
+        else
         {
             UpdateCombatRig();
-        }
+
+           //SetIKWeight(1);
+        }        
+
+        
     }
 
+    /// <summary>
+    /// Sets attatched Rig(s) weights accordingly (While attacking | Not attacking)
+    /// </summary>
     private void UpdateCombatRig()
     {
         if (_animator.GetBool(Attack)) 
@@ -153,15 +150,28 @@ public class CharacterAnimator : MonoBehaviour
             }            
         }
     }
+
+    
+
+    /// <summary>
+    /// Blend tree value for free roam walking.
+    /// </summary>
+    /// <param name="walkValue"></param>
     public void SetFreeWalkValues(float walkValue)
     {
         _animator.SetFloat(_FreeWalk, walkValue);
     }
 
+    /// <summary>
+    /// Blend tree values for Legs during combat.
+    /// </summary>
+    /// <param name="newX">Horizontal input</param>
+    /// <param name="newY">Vertical input</param>
+    /// <param name="time">Lerp time (Time.deltaTime or Time.fixedDeltaTime)</param>
     public void SetCombatWalkValues(float newX, float newY, float time)
     {
         float x = _animator.GetFloat(_WalkX);
-        float y  = _animator.GetFloat(_WalkY);
+        float y = _animator.GetFloat(_WalkY);
 
         x = Mathf.Lerp(x, newX, time * 5);
         y = Mathf.Lerp(y, newY, time * 5);
@@ -170,31 +180,11 @@ public class CharacterAnimator : MonoBehaviour
         _animator.SetFloat(_WalkY, y);
     }
 
-    //Aim Integer method
-    public void SetStanceAnim(float angle)
-    {
-        if (angle > 0 && angle <= 90)
-        {
-            _animator.SetInteger("Aim", 3);
-        }
-        else if (angle > 90 && angle <= 179)
-        {
-            _animator.SetInteger("Aim", 0);
-
-        }
-        else if (angle < -90 && angle >= -179)
-        {
-            _animator.SetInteger("Aim", 2);
-
-        }
-        else if (angle < 0 && angle >= -90)
-        {
-            _animator.SetInteger("Aim", 1);
-
-        }
-    }
-
-    //Aim Blend tree method
+    /// <summary>
+    /// Blend tree aiming. Uses Vector2 direction values to set aim smoothly
+    /// </summary>
+    /// <param name="X"></param>
+    /// <param name="Y"></param>
     public void SetStanceAim(float X, float Y)
     {
         X = Mathf.Clamp(X, -1, 1);
@@ -246,7 +236,13 @@ public class CharacterAnimator : MonoBehaviour
         }
     }
 
-    public void SetAnimatorWeight(int index, float weight, float time)
+    /// <summary>
+    /// Used for switching between different animation layers: Base Layer, Legs Layer
+    /// </summary>
+    /// <param name="index"></param>
+    /// <param name="weight"></param>
+    /// <param name="time"></param>
+    public void SetLayerWeight(int index, float weight, float time)
     {
         if (Mathf.Approximately(_animator.GetLayerWeight(index), weight))
         {
@@ -266,8 +262,31 @@ public class CharacterAnimator : MonoBehaviour
         _animator.SetLayerWeight(index, t);
     }
 
-    public void SetWalkSate(bool freewalking)
+    public void UpdateHeadTarget(Vector3 newPos)
     {
-        Engaged = freewalking;
+        if (HeadRig != null && HeadAimTarget != null)
+        {
+            HeadAimTarget.position = newPos;
+        }
+    }
+
+    /// <summary>
+    /// Sets ALL attatched Rig weights to value
+    /// </summary>
+    /// <param name="weight">New rig weight</param>
+    private void SetIKWeight(float weight)
+    {
+        if (weight <= 0)
+        {
+            weight = 0;
+        }
+        else if (weight > 1.0f)
+        {
+            weight = 1.0f;
+        }
+
+        HeadRig.weight = weight;
+        LeftArmRig.weight = weight;
+        RightArmRig.weight = weight;
     }
 }
