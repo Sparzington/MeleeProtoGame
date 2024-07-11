@@ -157,8 +157,6 @@ public class PlayerController : MonoBehaviour, IController
                 Engage();
 
                 TargetingDot._instance.SetTarget(TargetTransform);
-
-                _stanceComponent.ToggleStanceUI(true);
             }
             else
             {
@@ -171,8 +169,6 @@ public class PlayerController : MonoBehaviour, IController
             Disengage();
 
             TargetingDot._instance.DisableTarget();
-
-            _stanceComponent.ToggleStanceUI(false);
         }
     }
     private void OnStanceRotateGP(InputValue value)
@@ -270,6 +266,13 @@ public class PlayerController : MonoBehaviour, IController
             }
         }        
     }
+
+    //Block
+    private void OnBlock()
+    {
+        Debug.Log("Block");
+    }
+
 
     //Helpers
     #region Helpers
@@ -457,13 +460,14 @@ public class PlayerController : MonoBehaviour, IController
     public void Engage()
     {
         Engaged = true;
-        _characterAnimator.Engaged = Engaged;
+        _characterAnimator.InitEngage();
+        _stanceComponent.ToggleStanceUI(true);
     }
 
     public void Disengage()
     {
         Engaged = false;
-        _characterAnimator.Engaged = Engaged;
+        _characterAnimator.Disengage();
         _stanceComponent.ToggleStanceUI(false);
     }
 }

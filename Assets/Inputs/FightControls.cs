@@ -98,6 +98,15 @@ public partial class @FightControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Block"",
+                    ""type"": ""Button"",
+                    ""id"": ""f2263b61-6013-4b5f-9eec-61b41eb3c559"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -320,6 +329,28 @@ public partial class @FightControls: IInputActionCollection2, IDisposable
                     ""action"": ""Run"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c535bbfc-46cc-48b5-ac0f-85af98786261"",
+                    ""path"": ""<Keyboard>/f"",
+                    ""interactions"": ""Tap"",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Block"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6fe92934-9e0e-4300-b820-fbc8e4d6997e"",
+                    ""path"": ""<Gamepad>/leftShoulder"",
+                    ""interactions"": ""Tap"",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Block"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -336,6 +367,7 @@ public partial class @FightControls: IInputActionCollection2, IDisposable
         m_PlayerStance_MovementGP = m_PlayerStance.FindAction("MovementGP", throwIfNotFound: true);
         m_PlayerStance_StanceLock = m_PlayerStance.FindAction("StanceLock", throwIfNotFound: true);
         m_PlayerStance_Run = m_PlayerStance.FindAction("Run", throwIfNotFound: true);
+        m_PlayerStance_Block = m_PlayerStance.FindAction("Block", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -405,6 +437,7 @@ public partial class @FightControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_PlayerStance_MovementGP;
     private readonly InputAction m_PlayerStance_StanceLock;
     private readonly InputAction m_PlayerStance_Run;
+    private readonly InputAction m_PlayerStance_Block;
     public struct PlayerStanceActions
     {
         private @FightControls m_Wrapper;
@@ -417,6 +450,7 @@ public partial class @FightControls: IInputActionCollection2, IDisposable
         public InputAction @MovementGP => m_Wrapper.m_PlayerStance_MovementGP;
         public InputAction @StanceLock => m_Wrapper.m_PlayerStance_StanceLock;
         public InputAction @Run => m_Wrapper.m_PlayerStance_Run;
+        public InputAction @Block => m_Wrapper.m_PlayerStance_Block;
         public InputActionMap Get() { return m_Wrapper.m_PlayerStance; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -450,6 +484,9 @@ public partial class @FightControls: IInputActionCollection2, IDisposable
             @Run.started += instance.OnRun;
             @Run.performed += instance.OnRun;
             @Run.canceled += instance.OnRun;
+            @Block.started += instance.OnBlock;
+            @Block.performed += instance.OnBlock;
+            @Block.canceled += instance.OnBlock;
         }
 
         private void UnregisterCallbacks(IPlayerStanceActions instance)
@@ -478,6 +515,9 @@ public partial class @FightControls: IInputActionCollection2, IDisposable
             @Run.started -= instance.OnRun;
             @Run.performed -= instance.OnRun;
             @Run.canceled -= instance.OnRun;
+            @Block.started -= instance.OnBlock;
+            @Block.performed -= instance.OnBlock;
+            @Block.canceled -= instance.OnBlock;
         }
 
         public void RemoveCallbacks(IPlayerStanceActions instance)
@@ -505,5 +545,6 @@ public partial class @FightControls: IInputActionCollection2, IDisposable
         void OnMovementGP(InputAction.CallbackContext context);
         void OnStanceLock(InputAction.CallbackContext context);
         void OnRun(InputAction.CallbackContext context);
+        void OnBlock(InputAction.CallbackContext context);
     }
 }

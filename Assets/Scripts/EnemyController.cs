@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public enum EnemyAggro { NEUTRAL, CHASE, ENGAGING, ATTACK}
-public class EnemyController : MonoBehaviour
+public class EnemyController : MonoBehaviour, IController
 {
     //Fighter Component
     private Fighter _fighter;
@@ -39,6 +39,10 @@ public class EnemyController : MonoBehaviour
     public float Aim_X;
     [Range(-1, 1)]
     public float Aim_Y;
+    private float Angle;
+
+    private float aimCooldown = 1.3f;
+    private float curentColldown;
 
     [Header("Spot Radius")]
     [SerializeField] private float SpotRadius;
@@ -78,6 +82,8 @@ public class EnemyController : MonoBehaviour
         _fighter.FighterInit();
         _navigation.InitAgent();
 
+        Disengage();
+
         _enemyAggro = EnemyAggro.NEUTRAL;
     }
 
@@ -102,6 +108,7 @@ public class EnemyController : MonoBehaviour
                 if (LookForTarget())
                 {
                     _enemyAggro = EnemyAggro.CHASE;
+                    Engage();
                 }
 
                 break;
@@ -122,6 +129,7 @@ public class EnemyController : MonoBehaviour
                 else if (TargetDistance > MaxAggroRadius)
                 {
                     _enemyAggro = EnemyAggro.NEUTRAL;
+                    Disengage();
                 }
 
                 break;
@@ -132,8 +140,18 @@ public class EnemyController : MonoBehaviour
                 {
                     _navigation.Stop();
                 }
-                _characterAnimator.UpdateHeadTarget(TargetTransform.position);
+
                 transform.forward = Vector3.Lerp(transform.forward, TargetDirection, Time.deltaTime * 5);
+
+                if (curentColldown < aimCooldown)
+                {
+                    curentColldown += Time.deltaTime;
+                }
+                else
+                {
+                    curentColldown = 0;
+                    ChooseRandomStanceAndAttack();
+                }
 
                 if (TargetDistance > AttackRadius)
                 {
@@ -200,24 +218,67 @@ public class EnemyController : MonoBehaviour
         }
     }
 
+    //Stance
+    private void ChooseRandomStanceAndAttack()
+    {
+        Vector2 newStance = Vector2.zero;
+
+        newStance = UnityEngine.Random.insideUnitCircle;
+
+        Aim_X = newStance.x;
+        Aim_Y = newStance.y;
+
+        Angle = GetAngle(newStance);
+        _stanceComponent.UpdateRotation(Angle);
+
+        LightAttack(Angle);
+    }
+    private float GetAngle(Vector2 incoming)
+    {
+        //float angle = Mathf.Atan2(incoming.y - Vector2.right.y, incoming.x - Vector2.right.x) * 180 / Mathf.PI;
+        float angle = Mathf.Atan2(incoming.y, incoming.x) * 180 / Mathf.PI;
+
+        return angle;
+    }
     //Attack Calls
-    private void LightAttack()
+    private void LightAttack(float angle)
     {
         _fighter.LightAttack(false);
 
         if (_fighter.CanAttack)
         {
-            _characterAnimator.PlayAttack(25, AttackTier.LIGHT);
+            _characterAnimator.PlayAttack(angle, AttackTier.LIGHT);
         }
     }
 
-    private void HeavyAttack()
+    private void HeavyAttack(float angle)
     {
         _fighter.HeavyAttack();
 
         if (_fighter.CanAttack)
         {
-            _characterAnimator.PlayAttack(25, AttackTier.HEAVY);
+            _characterAnimator.PlayAttack(angle, AttackTier.HEAVY);
+        }
+    }
+    public void Engage()
+    {
+        Engaged = true;
+        _characterAnimator.InitEngage();
+
+        if (_stanceComponent != null)
+        {
+            _stanceComponent.ToggleStanceUI(true);
+        }
+    }
+
+    public void Disengage()
+    {
+        Engaged = false;
+        _characterAnimator.Disengage();
+
+        if (_stanceComponent != null)
+        {
+            _stanceComponent.ToggleStanceUI(false);
         }
     }
 
@@ -231,5 +292,5 @@ public class EnemyController : MonoBehaviour
 
         Gizmos.color = Color.green;
         Gizmos.DrawWireSphere(transform.position, MaxAggroRadius);
-    }
+    }    
 }

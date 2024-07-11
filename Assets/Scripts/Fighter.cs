@@ -40,6 +40,8 @@ public class Fighter : MonoBehaviour, IDamageable, IFighter, ITargetable
     private Attack PreviousAttack;
     private ComboLevel _currentAttackLevel;
 
+    public bool CanBlock { get; private set; }
+
     //Movement 
     public bool EngageMovement { get; private set; }
 

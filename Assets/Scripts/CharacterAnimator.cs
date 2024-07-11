@@ -266,8 +266,20 @@ public class CharacterAnimator : MonoBehaviour
     {
         if (HeadRig != null && HeadAimTarget != null)
         {
+            newPos.y += 1.5f;
             HeadAimTarget.position = newPos;
         }
+    }
+    public void InitEngage()
+    {
+        Engaged = true;
+        SetIKWeight(1);
+    }
+
+    public void Disengage()
+    {
+        Engaged = false;
+        SetIKWeight(0.0f);
     }
 
     /// <summary>

@@ -4,17 +4,20 @@ using UnityEngine;
 
 public class UIBillboard : MonoBehaviour
 {
+    //Main camera
     private GameObject FacingCamera;
+
+    private Vector3 FaceDirection;
 
     private void Awake()
     {
         FacingCamera = GetComponent<Canvas>().worldCamera.gameObject;
     }
 
-    private void OnEnable()
+    private void Update()
     {
-        Vector3 faceDirection = transform.position - FacingCamera.transform.position;
+        FaceDirection = transform.position - FacingCamera.transform.position;
+        transform.rotation = Quaternion.LookRotation(FaceDirection.normalized);
 
-        transform.transform.rotation = Quaternion.LookRotation(faceDirection.normalized);
     }
 }
